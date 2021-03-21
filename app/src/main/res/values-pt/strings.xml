@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TripPlan</string>
+    <string name="bLogin">Entrar</string>
+    <string name="bRegister">Registar</string>
+    <string name="bRecover">Recuperar password</string>
+    <string name="etEmail">Email</string>
+    <string name="etPassword">Password</string>
+    <string name="etConfirmPassword">Confirmar password</string>
+    <string name="etName">Nome</string>
+    <string name="etSurname">Apelido</string>
+</resources>

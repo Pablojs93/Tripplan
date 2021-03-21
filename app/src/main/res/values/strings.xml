@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">TripPlan</string>
+
+    <!-- Login / register / recover password !-->
+    <string name="bLogin">Login</string>
+    <string name="bRegister">Register</string>
+    <string name="bRecover">Recover password</string>
+    <string name="etName">Name</string>
+    <string name="etSurname">Surname</string>
+    <string name="etEmail">Email</string>
+    <string name="etPassword">Password</string>
+    <string name="etConfirmPassword">Confirm password</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="api_key" translatable="false">AIzaSyDvz6yilc-vfRRlTgMUJMRRwYdl394fuzM</string>
+</resources>

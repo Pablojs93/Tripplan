@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1016856588003",
+    "project_id": "tripplan-pjas",
+    "storage_bucket": "tripplan-pjas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016856588003:android:95b57863c993c46cf25fd6",
+        "android_client_info": {
+          "package_name": "com.pjas.tripplan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1016856588003-r2hbfkr0nfaupudeemvvdk45d71ppm2a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRwCVyxLJEwt0opUAVdn_YUXKr-crE0n8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1016856588003-r2hbfkr0nfaupudeemvvdk45d71ppm2a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
