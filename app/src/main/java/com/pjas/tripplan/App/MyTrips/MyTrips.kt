@@ -33,6 +33,7 @@ import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
+import com.pjas.tripplan.Login.Login
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.mytrips_home_layout.*
 import kotlinx.android.synthetic.main.trips_layout.view.*
@@ -81,8 +82,7 @@ class MyTrips : AppCompatActivity() {
                     }
                     2 -> {
                         // Signout
-                        FirebaseAuth.getInstance().signOut()
-                        finish()
+                        goLogin()
                     }
                 }
                 // Don't highlight the 'Profile' and 'Like us on Facebook' item row
@@ -174,7 +174,6 @@ class MyTrips : AppCompatActivity() {
 
     }
 
-
     private fun loadTripsList() {
         val id = FirebaseAuth.getInstance().currentUser.uid
         firestoreDB!!
@@ -202,8 +201,14 @@ class MyTrips : AppCompatActivity() {
             }
     }
 
-
     // // View Holder Class
+
+    fun goLogin(){
+        FirebaseAuth.getInstance().signOut()
+        finish()
+        val intent = Intent(this, Login::class.java)
+        startActivity(intent)
+    }
 
     fun goMyTrips(){
         val intent = Intent(this, MyTrips::class.java)

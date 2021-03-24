@@ -1,12 +1,15 @@
 package com.pjas.tripplan.Classes.Database.Adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
+import com.pjas.tripplan.App.MyTrips.TripDetails
 import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.R
 
@@ -20,7 +23,7 @@ class TripRecyclerViewAdapter (
         parent: ViewGroup,
         viewType: Int
     ): TripRecyclerViewAdapter.ViewHolder{
-        val view = LayoutInflater.from(parent!!.context).inflate(R.layout.trips_layout, parent, false)
+        val view = LayoutInflater.from(parent!!.context).inflate(R.layout.trip_layout, parent, false)
         return ViewHolder(view)
     }
 
@@ -35,6 +38,10 @@ class TripRecyclerViewAdapter (
         holder!!.places.text = trip.places
         holder!!.begining.text = trip.begining
         holder!!.end.text = trip.end
+
+        holder.details.setOnClickListener{
+            getDetails(trip)
+        }
     }
 
     inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
@@ -42,6 +49,7 @@ class TripRecyclerViewAdapter (
         internal var places: TextView
         internal var begining: TextView
         internal var end: TextView
+        internal var details: ImageButton
 
         init {
             name = view.findViewById(R.id.tv_TripNameT)
@@ -49,7 +57,16 @@ class TripRecyclerViewAdapter (
 
             begining = view.findViewById(R.id.tv_TripBeginingT)
             end = view.findViewById(R.id.tv_TripEndT)
+
+            details = view.findViewById(R.id.b_TripDetailsT)
         }
+    }
+
+    private fun getDetails(trip: Trip){
+        val intent = Intent(context, TripDetails::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra("tripID", trip.id)
+        context.startActivity(intent)
     }
 
     /*private fun updateNote(note: Note) {
