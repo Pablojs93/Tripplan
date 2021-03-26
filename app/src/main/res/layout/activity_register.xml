@@ -28,7 +28,6 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="106dp"
         android:width="200dp"
-        android:onClick="RegisterUser"
         android:text="@string/bRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

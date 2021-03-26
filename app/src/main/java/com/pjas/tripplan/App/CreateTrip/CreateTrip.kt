@@ -1,70 +1,54 @@
 package com.pjas.tripplan.App.CreateTrip
 
-import `in`.madapps.placesautocomplete.PlaceAPI
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.snapshot.BooleanNode
 import com.google.firebase.firestore.FirebaseFirestore
+import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.MultiplePlacesTrip
+import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.OnePlaceTrip
 import com.pjas.tripplan.App.MyTrips.MyTrips
-import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.createtrip_home_layout.*
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.regex.Pattern
 
 
 class CreateTrip : AppCompatActivity() {
 
-    val placesApi = PlaceAPI.Builder()
-        .apiKey("AIzaSyDvz6yilc-vfRRlTgMUJMRRwYdl394fuzM")
-        .build(this@CreateTrip)
-
-    var street = ""
-    var city = ""
-    var state = ""
-    var country = ""
-    var zipCode = ""
-
     lateinit var drawerLayout: DrawerLayout
     private lateinit var adapter: NavigationRVAdapter
-    private lateinit var  autocompleteFragment: AutocompleteSupportFragment
 
-    var apiKey = ""
+    //lateinit var placesClient: PlacesClient
 
-    lateinit var placesClient: PlacesClient
+    private lateinit var bNext: Button
+    private lateinit var rbYesMP: RadioButton
+    private lateinit var rbNoMP: RadioButton
+    private lateinit var rbYesST: RadioButton
+    private lateinit var rbNoST: RadioButton
+    private lateinit var etName: EditText
+    private lateinit var sType: Spinner
+    private lateinit var rgMultiplePlaces: RadioGroup
+    private lateinit var rgSharedTrip: RadioGroup
 
-    private lateinit var bCreate: Button
-    private lateinit var etBegining: EditText
-    private lateinit var etEnd: EditText
+    private var sharedTrip: Boolean? = false
+    private var multiplePlaces: Boolean? = false
+
 
     private var firestoreDB: FirebaseFirestore? = null
     internal var id: String = ""
@@ -83,12 +67,8 @@ class CreateTrip : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createtrip_home_layout)
 
-        apiKey = getString(R.string.api_key)
 
-        if(!Places.isInitialized())
-            Places.initialize(applicationContext,apiKey)
-
-        placesClient = Places.createClient(this)
+        //placesClient = Places.createClient(this)
 
         drawerLayout = findViewById(R.id.drawer_layout)
 
@@ -177,7 +157,7 @@ class CreateTrip : AppCompatActivity() {
             R.color.colorPrimary
         ))
 
-        val dateSetListenerBegining = object: DatePickerDialog.OnDateSetListener {
+        /*val dateSetListenerBegining = object: DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, day: Int) {
                 cal.set(Calendar.YEAR, year)
                 cal.set(Calendar.MONTH, month)
@@ -193,9 +173,9 @@ class CreateTrip : AppCompatActivity() {
                 cal.set(Calendar.DAY_OF_MONTH, day)
                 updateDateEnd()
             }
-        }
+        }*/
 
-        etBegining = findViewById<View>(R.id.et_BeginingCT) as EditText
+        /*etBegining = findViewById<View>(R.id.et_BeginingCT) as EditText
         etBegining.showSoftInputOnFocus = false
 
         etBegining.setOnClickListener{
@@ -227,17 +207,28 @@ class CreateTrip : AppCompatActivity() {
                 cal.get(Calendar.DAY_OF_MONTH)
             ).show()
             true
+        }*/
+
+        init()
+        rbNoMP.isChecked = true
+        rbNoST.isChecked = true
+
+        rgSharedTrip.setOnCheckedChangeListener { group, checkedId ->
+            sharedTrip = rbYesST.isChecked
         }
 
-        bCreate = findViewById<View>(R.id.b_Create) as Button
-        bCreate!!.setOnClickListener{
+        rgMultiplePlaces.setOnCheckedChangeListener { group, checkedId ->
+            multiplePlaces = rbYesMP.isChecked
+        }
+
+        bNext!!.setOnClickListener{
             Create()
         }
     }
 
     //private fun showDatePick
 
-    private fun updateDateBegining() {
+    /*private fun updateDateBegining() {
         val myFormat = "dd/MM/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         etBegining.setText(sdf.format(cal.getTime()))
@@ -274,17 +265,42 @@ class CreateTrip : AppCompatActivity() {
         }
         else
             return false
+    }*/
+
+
+    fun init(){
+        bNext = findViewById<View>(R.id.b_Next) as Button
+        etName = findViewById<View>(R.id.et_NameTripCT) as EditText
+        rbYesMP = findViewById<View>(R.id.rb_YesMPCT) as RadioButton
+        rbYesST = findViewById<View>(R.id.rb_YesSTCT) as RadioButton
+        rbNoMP = findViewById<View>(R.id.rb_NoMPCT) as RadioButton
+        rbNoST = findViewById<View>(R.id.rb_NoSTCT) as RadioButton
+        sType = findViewById<View>(R.id.s_TripTypeCT) as Spinner
+        rgMultiplePlaces = findViewById<View>(R.id.rg_MultiplePlacesCT) as RadioGroup
+        rgSharedTrip = findViewById<View>(R.id.rg_SharedTripCT) as RadioGroup
     }
 
 
     fun Create(){
         val tripName = et_NameTripCT.text.toString()
-        val tripPlace = et_PlaceTripCT.text.toString()
-        val tripBegining = et_BeginingCT.text.toString()
-        val tripEnd = et_EndCT.text.toString()
+        val tripType = sType.selectedItem.toString()
         val created = FirebaseAuth.getInstance().currentUser.uid
-        val sharedWith = ""
 
+        if(!TextUtils.isEmpty(tripName)){
+            lateinit var intent: Intent
+
+            if(multiplePlaces == true)
+                intent = Intent(this, MultiplePlacesTrip::class.java)
+            else
+                intent = Intent(this, OnePlaceTrip::class.java)
+
+            intent.putExtra("tripName", tripName)
+            intent.putExtra("tripMultiplePlaces", multiplePlaces)
+            intent.putExtra("tripShared", sharedTrip)
+            intent.putExtra("tripType", tripType)
+            intent.putExtra("created", created)
+            startActivity(intent)
+        }
 
         /*val simpleDateFormat = DateTimeFormatter.ISO_DATE
         val current = LocalDate.parse(Date().toString(), simpleDateFormat)
@@ -309,7 +325,7 @@ class CreateTrip : AppCompatActivity() {
             Toast.makeText(applicationContext, "Data de inicio anterior à data atual!",
                 Toast.LENGTH_SHORT).show()*/
 
-        val current = LocalDate.now()
+        /*val current = LocalDate.now()
 
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         val now = current.format(formatter)
@@ -342,7 +358,7 @@ class CreateTrip : AppCompatActivity() {
                 Toast.makeText(
                     applicationContext, "Error",
                     Toast.LENGTH_SHORT)
-        }
+        }*/
     }
 
     fun goMyTrips(){

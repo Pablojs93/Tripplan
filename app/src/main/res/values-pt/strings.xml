@@ -9,4 +9,16 @@
     <string name="etConfirmPassword">Confirmar password</string>
     <string name="etName">Nome</string>
     <string name="etSurname">Apelido</string>
+    <string name="etTripName">Nome da viagem</string>
+    <string name="tvMultiplePlaces">Múltiplos destinos</string>
+    <string name="rbYes">"Sim "</string>
+    <string name="rbNo">Não</string>
+    <string name="bNext">Seguinte</string>
+    <string name="tvTripType">Tipo de viagem</string>
+    <string name="tvSharedTrip">Viagem partilhada</string>
+    <string-array name="spTripTypes">
+        <item>Negócio</item>
+        <item>Prazer</item>
+        <item>Outro</item>
+    </string-array>
 </resources>

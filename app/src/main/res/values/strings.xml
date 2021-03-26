@@ -10,7 +10,25 @@
     <string name="etEmail">Email</string>
     <string name="etPassword">Password</string>
     <string name="etConfirmPassword">Confirm password</string>
+
+    <!-- Navigation Drawer !-->
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    <!-- keys !-->
     <string name="api_key" translatable="false">AIzaSyDvz6yilc-vfRRlTgMUJMRRwYdl394fuzM</string>
+
+    <!-- Create trip !-->
+    <string name="etTripName">Trip name</string>
+    <string name="tvMultiplePlaces">Multiple places</string>
+    <string name="rbYes">Yes</string>
+    <string name="rbNo">No</string>
+    <string name="tvSharedTrip">Shared trip</string>
+    <string name="tvTripType">Trip type</string>
+    <string-array name="spTripTypes">
+        <item>Business</item>
+        <item>Holidays</item>
+        <item>Other</item>
+    </string-array>
+    <string name="bNext">Next</string>
 </resources>
