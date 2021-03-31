@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.pjas.tripplan.App.CreateTrip.CreateTrip
 import com.pjas.tripplan.App.MyTrips.MyTrips
 import com.pjas.tripplan.R
 

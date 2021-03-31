@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="50dp"
                 android:layout_marginEnd="10dp"
                 android:ems="10"
                 android:hint="@string/etTripName"
@@ -29,50 +29,42 @@
                 android:paddingStart="10dp"
                 android:textColorHint="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_SharedTrip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="@string/tvSharedTrip"
-                android:textColor="#000000"
-                android:textSize="15sp"
-                app:layout_constraintTop_toBottomOf="@+id/rb_YesMP"
-                tools:layout_editor_absoluteX="10dp" />
-
-            <Button
-                android:id="@+id/b_Next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/bNext"
-                tools:layout_editor_absoluteX="298dp"
-                tools:layout_editor_absoluteY="657dp" />
-
-            <RadioButton
-                android:id="@+id/rb_NoMP"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="70dp"
-                android:layout_marginTop="64dp"
-                android:text="@string/rbNo"
-                app:layout_constraintStart_toEndOf="@+id/rb_YesMP"
-                app:layout_constraintTop_toBottomOf="@+id/et_NameTripCT" />
-
-            <RadioButton
-                android:id="@+id/rb_YesMP"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/etd_TripBeginingCT"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
-                android:text="@string/rbYes"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
+                android:ems="10"
+                android:hint="@string/etdTripBegining"
+                android:inputType="date"
+                android:textColorHint="#000000"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_MultiplePlaces" />
+                app:layout_constraintTop_toBottomOf="@+id/et_NameTripCT" />
+
+            <EditText
+                android:id="@+id/etd_TripEndCT"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
+                android:ems="10"
+                android:hint="@string/etdTripEnd"
+                android:inputType="date"
+                android:textColorHint="#000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etd_TripBeginingCT" />
 
             <TextView
-                android:id="@+id/tv_MultiplePlaces"
+                android:id="@+id/tv_MultiplePlacesCT"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -81,30 +73,77 @@
                 android:textColor="#000000"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_NameTripCT" />
+                app:layout_constraintTop_toBottomOf="@+id/etd_TripEndCT" />
 
-            <RadioButton
-                android:id="@+id/radioButton6"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/rg_MultiplePlacesCT"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
-                android:text="@string/rbYes"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_SharedTrip" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_MultiplePlacesCT">
 
-            <RadioButton
-                android:id="@+id/radioButton7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="70dp"
-                android:layout_marginTop="65dp"
-                android:text="@string/rbNo"
-                app:layout_constraintStart_toEndOf="@+id/radioButton6"
-                app:layout_constraintTop_toBottomOf="@+id/rb_NoMP" />
+                <RadioButton
+                    android:id="@+id/rb_YesMPCT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rbYes" />
+
+                <RadioButton
+                    android:id="@+id/rb_NoMPCT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_weight="1"
+                    android:text="@string/rbNo" />
+            </RadioGroup>
 
             <TextView
-                android:id="@+id/tv_TripType"
+                android:id="@+id/tv_SharedTripCT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
+                android:text="@string/tvSharedTrip"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rg_MultiplePlacesCT" />
+
+            <RadioGroup
+                android:id="@+id/rg_SharedTripCT"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_SharedTripCT">
+
+                <RadioButton
+                    android:id="@+id/rb_YesSTCT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rbYes" />
+
+                <RadioButton
+                    android:id="@+id/rb_NoSTCT"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="@string/rbNo" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/tv_TripTypeCT"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -113,10 +152,10 @@
                 android:textColor="#000000"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/radioButton6" />
+                app:layout_constraintTop_toBottomOf="@+id/rg_SharedTripCT" />
 
             <Spinner
-                android:id="@+id/spinner"
+                android:id="@+id/s_TripTypeCT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -124,8 +163,19 @@
                 android:layout_marginEnd="10dp"
                 android:entries="@array/spTripTypes"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_TripType" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_TripTypeCT" />
+
+            <Button
+                android:id="@+id/b_Next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="30dp"
+                android:text="@string/bNext"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

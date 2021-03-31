@@ -20,6 +20,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.MultiplePlacesTrip
 import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.OnePlaceTrip
 import com.pjas.tripplan.App.MyTrips.MyTrips
+import com.pjas.tripplan.Classes.Database.Model.Trip
+import com.pjas.tripplan.Classes.Database.Model.TripPlace
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
@@ -45,6 +47,8 @@ class CreateTrip : AppCompatActivity() {
     private lateinit var sType: Spinner
     private lateinit var rgMultiplePlaces: RadioGroup
     private lateinit var rgSharedTrip: RadioGroup
+    private lateinit var etdBegining: EditText
+    private lateinit var etdEnd: EditText
 
     private var sharedTrip: Boolean? = false
     private var multiplePlaces: Boolean? = false
@@ -271,6 +275,8 @@ class CreateTrip : AppCompatActivity() {
     fun init(){
         bNext = findViewById<View>(R.id.b_Next) as Button
         etName = findViewById<View>(R.id.et_NameTripCT) as EditText
+        etdBegining = findViewById<View>(R.id.etd_TripBeginingCT) as EditText
+        etdEnd = findViewById<View>(R.id.etd_TripEndCT) as EditText
         rbYesMP = findViewById<View>(R.id.rb_YesMPCT) as RadioButton
         rbYesST = findViewById<View>(R.id.rb_YesSTCT) as RadioButton
         rbNoMP = findViewById<View>(R.id.rb_NoMPCT) as RadioButton
@@ -282,11 +288,30 @@ class CreateTrip : AppCompatActivity() {
 
 
     fun Create(){
-        val tripName = et_NameTripCT.text.toString()
+        val tripName = etName.text.toString()
         val tripType = sType.selectedItem.toString()
         val created = FirebaseAuth.getInstance().currentUser.uid
+        val sharedWith: List<String>? = emptyList()
+        val places: List<TripPlace>? = emptyList()
+        val tripBegining = etdBegining.text.toString()
+        val tripEnd = etdEnd.text.toString()
 
-        if(!TextUtils.isEmpty(tripName)){
+        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName)){
+
+            firestoreDB = FirebaseFirestore.getInstance()
+            val trip = Trip(tripName, multiplePlaces, places, sharedTrip, sharedWith, tripBegining, tripEnd, tripType, created)
+
+            firestoreDB!!.collection("Trips")
+                .add(trip)
+                .addOnSuccessListener { documentReference ->
+                    Toast.makeText(applicationContext, "Trip created",
+                        Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        applicationContext, "Error",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             lateinit var intent: Intent
 
             if(multiplePlaces == true)
@@ -294,11 +319,7 @@ class CreateTrip : AppCompatActivity() {
             else
                 intent = Intent(this, OnePlaceTrip::class.java)
 
-            intent.putExtra("tripName", tripName)
-            intent.putExtra("tripMultiplePlaces", multiplePlaces)
-            intent.putExtra("tripShared", sharedTrip)
-            intent.putExtra("tripType", tripType)
-            intent.putExtra("created", created)
+            intent = Intent(this, MyTrips::class.java)
             startActivity(intent)
         }
 
@@ -338,20 +359,7 @@ class CreateTrip : AppCompatActivity() {
 
         if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripPlace) && !TextUtils.isEmpty(tripBegining) && !TextUtils.isEmpty(tripEnd)){
             if(dateVerification == 1){
-                firestoreDB = FirebaseFirestore.getInstance()
-                val trip = Trip (tripName, tripPlace, tripBegining, tripEnd, created, sharedWith).toMap()
 
-                firestoreDB!!.collection("Trips")
-                    .add(trip)
-                    .addOnSuccessListener { documentReference ->
-                        Toast.makeText(applicationContext, "Trip created",
-                            Toast.LENGTH_SHORT).show()
-                    }.addOnFailureListener {
-                        Toast.makeText(
-                            applicationContext, "Error",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 goMyTrips()
             }
             else

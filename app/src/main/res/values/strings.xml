@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TripPlan</string>
 
-    <!-- Login / register / recover password !-->
+    <!-- Login / register / recover password -->
     <string name="bLogin">Login</string>
     <string name="bRegister">Register</string>
     <string name="bRecover">Recover password</string>
@@ -11,14 +11,14 @@
     <string name="etPassword">Password</string>
     <string name="etConfirmPassword">Confirm password</string>
 
-    <!-- Navigation Drawer !-->
+    <!-- Navigation Drawer -->
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
-    <!-- keys !-->
+    <!-- keys -->
     <string name="api_key" translatable="false">AIzaSyDvz6yilc-vfRRlTgMUJMRRwYdl394fuzM</string>
 
-    <!-- Create trip !-->
+    <!-- Create trip -->
     <string name="etTripName">Trip name</string>
     <string name="tvMultiplePlaces">Multiple places</string>
     <string name="rbYes">Yes</string>
@@ -31,4 +31,11 @@
         <item>Other</item>
     </string-array>
     <string name="bNext">Next</string>
+
+    <!-- Create trip multiple places -->
+    <string name="etTripPlace">Trip place</string>
+    <string name="etdTripBegining">Begining date</string>
+    <string name="etdTripEnd">End date</string>
+    <string name="bAddTrip">Add trip</string>
+
 </resources>

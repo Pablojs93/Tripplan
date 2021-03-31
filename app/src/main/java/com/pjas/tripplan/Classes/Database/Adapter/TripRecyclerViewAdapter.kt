@@ -6,18 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.MyTrips.TripDetails
 import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.R
+import kotlinx.android.synthetic.main.trip_layout.view.*
 
 class TripRecyclerViewAdapter (
     private val tripsList: MutableList<Trip>,
     private val context: Context,
     private val firestoreDB: FirebaseFirestore)
     : RecyclerView.Adapter<TripRecyclerViewAdapter.ViewHolder>() {
+
+    private val viewPool = RecyclerView.RecycledViewPool()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -34,10 +39,18 @@ class TripRecyclerViewAdapter (
     override fun onBindViewHolder(holder: TripRecyclerViewAdapter.ViewHolder, position: Int) {
         val trip = tripsList[position]
 
+
         holder!!.name.text = trip.name
-        holder!!.places.text = trip.places
-        holder!!.begining.text = trip.begining
-        holder!!.end.text = trip.end
+        holder!!.begining.text = trip.tripBegining
+        holder!!.end.text = trip.tripEnd
+
+        val childLayoutManager = LinearLayoutManager(holder.itemView.rv_Places.context, RecyclerView.VERTICAL, false)
+
+        holder.itemView.rv_Places.apply {
+            layoutManager = childLayoutManager
+            adapter = PlaceAdapter(trip.multiplePlaces,context)
+            setRecycledViewPool(viewPool)
+        }
 
         holder.details.setOnClickListener{
             getDetails(trip)
@@ -46,14 +59,14 @@ class TripRecyclerViewAdapter (
 
     inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
         internal var name: TextView
-        internal var places: TextView
+        internal var places: RecyclerView
         internal var begining: TextView
         internal var end: TextView
         internal var details: ImageButton
 
         init {
             name = view.findViewById(R.id.tv_TripNameT)
-            places = view.findViewById(R.id.tv_TripPlaceT)
+            places = view.findViewById(R.id.rv_Places)
 
             begining = view.findViewById(R.id.tv_TripBeginingT)
             end = view.findViewById(R.id.tv_TripEndT)
@@ -76,9 +89,9 @@ class TripRecyclerViewAdapter (
         intent.putExtra("UpdateNoteTitle", note.title)
         intent.putExtra("UpdateNoteContent", note.content)
         context.startActivity(intent)
-    }
+    }*/
 
-    private fun deleteNote(id: String, position: Int) {
+    /*private fun deleteNote(id: String, position: Int) {
         firestoreDB.collection("notes")
             .document(id)
             .delete()
@@ -89,5 +102,4 @@ class TripRecyclerViewAdapter (
                 Toast.makeText(context, "Note has been deleted!", Toast.LENGTH_SHORT).show()
             }
     }*/
-
 }

@@ -21,4 +21,8 @@
         <item>Prazer</item>
         <item>Outro</item>
     </string-array>
+    <string name="etTripPlace">Sítio da viagem</string>
+    <string name="etdTripBegining">Data de início</string>
+    <string name="etdTripEnd">Data de fim</string>
+    <string name="bAddTrip">Adicionar viagem</string>
 </resources>

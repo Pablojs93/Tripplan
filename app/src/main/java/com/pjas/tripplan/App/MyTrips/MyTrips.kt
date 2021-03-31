@@ -196,7 +196,7 @@ class MyTrips : AppCompatActivity() {
                     rv_FutureTrips.itemAnimator = DefaultItemAnimator()
                     rv_FutureTrips.adapter = mAdapter
                 } else {
-                    //Log.d(TAG, "Error getting documents: ", task.exception)
+                    Log.d("TAG", "Error getting documents: ", task.exception)
                 }
             }
     }

@@ -89,15 +89,35 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/b_Next"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/etd_TripBeginingCT"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="30dp"
-                    android:text="@string/bNext"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:ems="10"
+                    android:hint="@string/etdTripBegining"
+                    android:inputType="date"
+                    android:textColorHint="#000000"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/et_NameTripCT" />
+
+                <EditText
+                    android:id="@+id/etd_TripEndCT"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:ems="10"
+                    android:hint="@string/etdTripEnd"
+                    android:inputType="date"
+                    android:textColorHint="#000000"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etd_TripBeginingCT" />
 
                 <TextView
                     android:id="@+id/tv_MultiplePlacesCT"
@@ -109,7 +129,7 @@
                     android:textColor="#000000"
                     android:textSize="15sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/et_NameTripCT" />
+                    app:layout_constraintTop_toBottomOf="@+id/etd_TripEndCT" />
 
                 <RadioGroup
                     android:id="@+id/rg_MultiplePlacesCT"
@@ -137,7 +157,6 @@
                         android:layout_marginLeft="30dp"
                         android:layout_weight="1"
                         android:text="@string/rbNo" />
-
                 </RadioGroup>
 
                 <TextView
@@ -157,10 +176,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="10dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_SharedTripCT">
 
@@ -199,8 +219,19 @@
                     android:layout_marginEnd="10dp"
                     android:entries="@array/spTripTypes"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_TripTypeCT" />
+
+                <Button
+                    android:id="@+id/b_Next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/bNext"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
