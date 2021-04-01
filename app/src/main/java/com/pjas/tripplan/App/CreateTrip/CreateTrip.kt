@@ -16,6 +16,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.MultiplePlacesTrip
 import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.OnePlaceTrip
@@ -57,6 +58,7 @@ class CreateTrip : AppCompatActivity() {
     private var firestoreDB: FirebaseFirestore? = null
     internal var id: String = ""
 
+    var docId: String = ""
     var cal = Calendar.getInstance()
 
     private var items = arrayListOf(
@@ -121,7 +123,8 @@ class CreateTrip : AppCompatActivity() {
         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, myTrips).commit()
 
         // Close the soft keyboard when you open or close the Drawer
-        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, activity_main_toolbar,
+        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(
+            this, drawerLayout, activity_main_toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         ) {
@@ -157,9 +160,12 @@ class CreateTrip : AppCompatActivity() {
         navigation_header_img.setImageResource(R.drawable.ic_baseline_airplanemode_active_24)
 
         // Set background of Drawer
-        navigation_layout.setBackgroundColor(ContextCompat.getColor(this,
-            R.color.colorPrimary
-        ))
+        navigation_layout.setBackgroundColor(
+            ContextCompat.getColor(
+                this,
+                R.color.colorPrimary
+            )
+        )
 
         /*val dateSetListenerBegining = object: DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, day: Int) {
@@ -291,27 +297,40 @@ class CreateTrip : AppCompatActivity() {
         val tripName = etName.text.toString()
         val tripType = sType.selectedItem.toString()
         val created = FirebaseAuth.getInstance().currentUser.uid
-        val sharedWith: List<String>? = emptyList()
-        val places: List<TripPlace>? = emptyList()
         val tripBegining = etdBegining.text.toString()
         val tripEnd = etdEnd.text.toString()
 
         if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName)){
 
-            firestoreDB = FirebaseFirestore.getInstance()
-            val trip = Trip(tripName, multiplePlaces, places, sharedTrip, sharedWith, tripBegining, tripEnd, tripType, created)
+            /*firestoreDB = FirebaseFirestore.getInstance()
+            val trip = Trip(
+                tripName,
+                multiplePlaces,
+                places,
+                sharedTrip,
+                sharedWith,
+                tripBegining,
+                tripEnd,
+                tripType,
+                created
+            )
 
             firestoreDB!!.collection("Trips")
                 .add(trip)
                 .addOnSuccessListener { documentReference ->
-                    Toast.makeText(applicationContext, "Trip created",
-                        Toast.LENGTH_SHORT).show()
-                }.addOnFailureListener {
+                    docId = documentReference.id
+                    Toast.makeText(
+                        applicationContext, "Trip created",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .addOnFailureListener {
                     Toast.makeText(
                         applicationContext, "Error",
                         Toast.LENGTH_SHORT
                     ).show()
-                }
+                }*/
+
             lateinit var intent: Intent
 
             if(multiplePlaces == true)
@@ -319,7 +338,26 @@ class CreateTrip : AppCompatActivity() {
             else
                 intent = Intent(this, OnePlaceTrip::class.java)
 
-            intent = Intent(this, MyTrips::class.java)
+            //intent.putExtra("id", docId)
+            //intent = Intent(this, MyTrips::class.java)
+
+            /*val trip = Trip(
+                tripName,
+                multiplePlaces,
+                places,
+                sharedTrip,
+                sharedWith,
+                tripBegining,
+                tripEnd,
+                tripType,
+                created
+            )*/
+
+            intent.putExtra("name", tripName)
+            intent.putExtra("begining", tripBegining)
+            intent.putExtra("end", tripEnd)
+            intent.putExtra("type", tripType)
+            intent.putExtra("created", created)
             startActivity(intent)
         }
 

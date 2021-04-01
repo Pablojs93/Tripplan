@@ -35,7 +35,7 @@ class PlaceAdapter (
     override fun onBindViewHolder(holder: PlaceAdapter.ViewHolder, position: Int) {
         val place = placesList?.get(position)
 
-        holder!!.place.text = place?.place
+        holder!!.place.text = "- " + place?.place
     }
 
     inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {

@@ -17,8 +17,8 @@ import com.pjas.tripplan.R
 
 class TripPlaceRecyclerViewAdapter (
     private val tripsPlaceList: MutableList<TripPlace>,
-    private val context: Context
-    )
+    private val context: Context,
+    private val firestoreDB: FirebaseFirestore)
     : RecyclerView.Adapter<TripPlaceRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -50,14 +50,14 @@ class TripPlaceRecyclerViewAdapter (
         internal var place: TextView
         internal var begining: TextView
         internal var end: TextView
-        internal var delete: ImageButton
+        //internal var delete: ImageButton
 
         init {
             place = view.findViewById(R.id.tv_Place)
             begining = view.findViewById(R.id.tv_Begining)
             end = view.findViewById(R.id.tv_End)
 
-            delete = view.findViewById(R.id.b_Delete)
+            //delete = view.findViewById(R.id.b_Delete)
         }
     }
 }

@@ -3,6 +3,7 @@ package com.pjas.tripplan.Classes.Database.Model
 import java.util.HashMap
 
 class TripPlace {
+    var id: String? = null
     var place: String? = null
     var begining: String? = null
     var end: String? = null
