@@ -16,8 +16,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.pjas.tripplan.Classes.Database.DatabaseModelUser
+import com.pjas.tripplan.Classes.Database.Model.Trip
+import com.pjas.tripplan.Classes.Database.Model.User
 import com.pjas.tripplan.R
 import java.util.regex.Pattern
 
@@ -34,8 +37,9 @@ class Register : AppCompatActivity() {
     private var pbCreate: ProgressDialog? = null
 
     //Firebase references
-    private var mDatabaseReference: DatabaseReference? = null
-    private var mDatabase: FirebaseDatabase? = null
+    //private var mDatabaseReference: DatabaseReference? = null
+    //private var mDatabase: FirebaseDatabase? = null
+    private var firestoreDB: FirebaseFirestore? = null
     private var mAuth: FirebaseAuth? = null
 
     //global variables
@@ -44,6 +48,7 @@ class Register : AppCompatActivity() {
     private var email: String? = null
     private var password: String? = null
     private var confirmPassword: String? = null
+    private var userID: String? = null
 
 
     val EMAIL_ADDRESS_PATTERN = Pattern.compile(
@@ -76,8 +81,9 @@ class Register : AppCompatActivity() {
         bRegister = findViewById<View>(R.id.b_RegisterR) as Button
         pbCreate = ProgressDialog(this)
 
-        mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("Users")
+        //mDatabase = FirebaseDatabase.getInstance()
+        //mDatabaseReference = mDatabase!!.reference!!.child("Users")
+        firestoreDB = FirebaseFirestore.getInstance()
         mAuth = FirebaseAuth.getInstance()
 
         bRegister!!.setOnClickListener{
@@ -108,11 +114,27 @@ class Register : AppCompatActivity() {
                             if (task.isSuccessful) {
                                 // Sign in success, update UI with the signed-in user's information
                                 //Log.d(TAG, "createUserWithEmail:success")
-                                val userId = mAuth!!.currentUser!!.uid
+                                userID = mAuth!!.currentUser!!.uid
 
-                                var model=DatabaseModelUser(name.toString(), surname.toString(), email.toString())
+                                //var model=DatabaseModelUser(name.toString(), surname.toString(), email.toString())
 
-                                mDatabaseReference!!.child(userId).setValue(model)
+                                //mDatabaseReference!!.child(userId).setValue(model)
+
+                                val user = User(name!!, surname!!, email!!, userID!!)
+
+                                firestoreDB!!.collection("Users")
+                                    .add(user)
+                                    .addOnSuccessListener { documentReference ->
+                                        Toast.makeText(
+                                            applicationContext, "User created",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }.addOnFailureListener {
+                                        Toast.makeText(
+                                            applicationContext, "Error",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
 
                                 //Verify Email
                                 verifyEmail()
@@ -145,12 +167,6 @@ class Register : AppCompatActivity() {
     data class User(val name: String? = null, val surname: String? = null, val email: String? = null) {
         // Null default values create a no-argument default constructor, which is needed
         // for deserialization from a DataSnapshot.
-    }
-
-    fun saveUser(name: String, surname: String, email: String) {
-        val user = User(name, surname, email)
-        val userId = mAuth!!.currentUser.uid
-        mDatabaseReference!!.child("users").child(userId).setValue(user)
     }
 
     private fun verifyEmail() {

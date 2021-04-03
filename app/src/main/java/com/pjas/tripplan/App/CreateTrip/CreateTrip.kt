@@ -1,11 +1,13 @@
 package com.pjas.tripplan.App.CreateTrip
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -14,49 +16,56 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.MultiplePlacesTrip
-import com.pjas.tripplan.App.CreateTrip.MultiplePlaces.OnePlaceTrip
 import com.pjas.tripplan.App.MyTrips.MyTrips
+import com.pjas.tripplan.Classes.Database.Adapter.TripRecyclerViewAdapter
+import com.pjas.tripplan.Classes.Database.Adapter.TripSharedRecyclerViewAdapter
+import com.pjas.tripplan.Classes.Database.Model.SharedWith
 import com.pjas.tripplan.Classes.Database.Model.Trip
-import com.pjas.tripplan.Classes.Database.Model.TripPlace
+import com.pjas.tripplan.Classes.Database.Model.User
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
+import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.createtrip_home_layout.*
+import kotlinx.android.synthetic.main.createtrip_home_layout.activity_main_toolbar
+import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_header_img
+import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_layout
+import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_rv
+import kotlinx.android.synthetic.main.mytrips_home_layout.*
+import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 
 
-class CreateTrip : AppCompatActivity() {
+class CreateTrip : AppCompatActivity()
+{
 
     lateinit var drawerLayout: DrawerLayout
     private lateinit var adapter: NavigationRVAdapter
 
-    //lateinit var placesClient: PlacesClient
-
     private lateinit var bNext: Button
-    private lateinit var rbYesMP: RadioButton
-    private lateinit var rbNoMP: RadioButton
-    private lateinit var rbYesST: RadioButton
-    private lateinit var rbNoST: RadioButton
+    private lateinit var bAdd: Button
     private lateinit var etName: EditText
-    private lateinit var sType: Spinner
-    private lateinit var rgMultiplePlaces: RadioGroup
-    private lateinit var rgSharedTrip: RadioGroup
     private lateinit var etdBegining: EditText
     private lateinit var etdEnd: EditText
+    private lateinit var sType: Spinner
+    private lateinit var etEmail: EditText
+    var picker: DatePickerDialog? = null
 
-    private var sharedTrip: Boolean? = false
-    private var multiplePlaces: Boolean? = false
+    val sharedWith = ArrayList<SharedWith>()
 
+    private var mAdapter: TripSharedRecyclerViewAdapter? = null
 
     private var firestoreDB: FirebaseFirestore? = null
     internal var id: String = ""
+    internal var shared: String = ""
 
     var docId: String = ""
     var cal = Calendar.getInstance()
@@ -67,12 +76,10 @@ class CreateTrip : AppCompatActivity() {
         NavigationItemModel(R.drawable.ic_baseline_airplanemode_active_24, "Signout")
     )
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.createtrip_home_layout)
-
 
         //placesClient = Places.createClient(this)
 
@@ -133,7 +140,7 @@ class CreateTrip : AppCompatActivity() {
                 super.onDrawerClosed(drawerView)
                 try {
                     val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                 } catch (e: Exception) {
                     e.stackTrace
@@ -145,7 +152,7 @@ class CreateTrip : AppCompatActivity() {
                 super.onDrawerOpened(drawerView)
                 try {
                     val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
                 } catch (e: Exception) {
                     e.stackTrace
@@ -185,50 +192,74 @@ class CreateTrip : AppCompatActivity() {
             }
         }*/
 
-        /*etBegining = findViewById<View>(R.id.et_BeginingCT) as EditText
-        etBegining.showSoftInputOnFocus = false
+        /*DatePickerDialog(
+            this@CreateTrip,
+            dateSetListenerBegining,
+            // set DatePickerDialog to point to today's date when it loads up
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
+        ).show()
+        true*/
 
-        etBegining.setOnClickListener{
+        init()
 
-        }
-
-        etBegining.setOnTouchListener { v, event ->
-            DatePickerDialog(
+        /*etdBegining.showSoftInputOnFocus = false
+        etdBegining.setOnTouchListener{ v, event ->
+            val cldr = Calendar.getInstance()
+            val day = cldr[Calendar.DAY_OF_MONTH]
+            val month = cldr[Calendar.MONTH]
+            val year = cldr[Calendar.YEAR]
+            // date picker dialog
+            // date picker dialog
+            picker = DatePickerDialog(
                 this@CreateTrip,
-                dateSetListenerEnd,
-                // set DatePickerDialog to point to today's date when it loads up
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            ).show()
-            true
-        }
-
-        etEnd = findViewById<View>(R.id.et_EndCT) as EditText
-        etEnd.showSoftInputOnFocus = false
-
-        etEnd.setOnTouchListener { v, event ->
-            DatePickerDialog(
-                this@CreateTrip,
-                dateSetListenerEnd,
-                // set DatePickerDialog to point to today's date when it loads up
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            ).show()
+                null,
+                year,
+                month,
+                day
+            )
+            picker!!.setCancelable(true)
+            picker!!.setCanceledOnTouchOutside(true)
+            picker!!.setButton(DialogInterface.BUTTON_POSITIVE, "OK")
+            {
+                    dialog, which -> etdBegining.setText(day.toString() + "/" + (month + 1) + "/" + year)
+            }
+            picker!!.show()
             true
         }*/
 
-        init()
-        rbNoMP.isChecked = true
-        rbNoST.isChecked = true
+        /*etdEnd.showSoftInputOnFocus = false
+        etdEnd.setOnTouchListener{ v, event ->
+            val cldr = Calendar.getInstance()
+            val day = cldr[Calendar.DAY_OF_MONTH]
+            val month = cldr[Calendar.MONTH]
+            val year = cldr[Calendar.YEAR]
+            // date picker dialog
+            // date picker dialog
+            picker = DatePickerDialog(
+                this@CreateTrip,
+                null,
+                year,
+                month,
+                day
+            )
+            picker!!.setCancelable(true)
+            picker!!.setCanceledOnTouchOutside(true)
+            picker!!.setButton(DialogInterface.BUTTON_POSITIVE, "OK")
+            {
+                    dialog, which -> etdEnd.setText(day.toString() + "/" + (month + 1) + "/" + year)
+            }
+            picker!!.show()
+            true
+        }*/
 
-        rgSharedTrip.setOnCheckedChangeListener { group, checkedId ->
-            sharedTrip = rbYesST.isChecked
-        }
+        showBeginingDate()
+        showEndDate()
 
-        rgMultiplePlaces.setOnCheckedChangeListener { group, checkedId ->
-            multiplePlaces = rbYesMP.isChecked
+        bAdd!!.setOnClickListener{
+            Add()
+            Load()
         }
 
         bNext!!.setOnClickListener{
@@ -236,18 +267,60 @@ class CreateTrip : AppCompatActivity() {
         }
     }
 
-    //private fun showDatePick
+    fun showBeginingDate() {
+        // DatePicker
 
-    /*private fun updateDateBegining() {
-        val myFormat = "dd/MM/yyyy" // mention the format you need
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
-        etBegining.setText(sdf.format(cal.getTime()))
+        var cal = Calendar.getInstance()
+
+        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, monthOfYear)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            val myFormat = "dd/MM/yyyy" // mention the format you need
+            val sdf = SimpleDateFormat(myFormat, Locale.US)
+            etdBegining.setText(sdf.format(cal.time))
+        }
+
+        etdBegining.setOnClickListener {
+
+            Log.d("Clicked", "Interview Date Clicked")
+
+            val dialog = DatePickerDialog(this, dateSetListener,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH))
+            //dialog.datePicker.minDate = CalendarHelper.getCurrentDateInMills()
+            dialog.show()
+        }
     }
 
-    private fun updateDateEnd() {
-        val myFormat = "dd/MM/yyyy" // mention the format you need
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
-        etEnd.setText(sdf.format(cal.getTime()))
+    fun showEndDate() {
+        // DatePicker
+
+        var cal = Calendar.getInstance()
+
+        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, monthOfYear)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            val myFormat = "dd/MM/yyyy" // mention the format you need
+            val sdf = SimpleDateFormat(myFormat, Locale.US)
+            etdEnd.setText(sdf.format(cal.time))
+        }
+
+        etdEnd.setOnClickListener {
+
+            Log.d("Clicked", "Interview Date Clicked")
+
+            val dialog = DatePickerDialog(this, dateSetListener,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH))
+            //dialog.datePicker.minDate = CalendarHelper.getCurrentDateInMills()
+            dialog.show()
+        }
     }
 
     fun verifyDates(f: String, s: String) : Boolean{
@@ -275,21 +348,46 @@ class CreateTrip : AppCompatActivity() {
         }
         else
             return false
-    }*/
-
+    }
 
     fun init(){
         bNext = findViewById<View>(R.id.b_Next) as Button
+        bAdd = findViewById<View>(R.id.b_AddPersonCT) as Button
         etName = findViewById<View>(R.id.et_NameTripCT) as EditText
         etdBegining = findViewById<View>(R.id.etd_TripBeginingCT) as EditText
         etdEnd = findViewById<View>(R.id.etd_TripEndCT) as EditText
-        rbYesMP = findViewById<View>(R.id.rb_YesMPCT) as RadioButton
-        rbYesST = findViewById<View>(R.id.rb_YesSTCT) as RadioButton
-        rbNoMP = findViewById<View>(R.id.rb_NoMPCT) as RadioButton
-        rbNoST = findViewById<View>(R.id.rb_NoSTCT) as RadioButton
         sType = findViewById<View>(R.id.s_TripTypeCT) as Spinner
-        rgMultiplePlaces = findViewById<View>(R.id.rg_MultiplePlacesCT) as RadioGroup
-        rgSharedTrip = findViewById<View>(R.id.rg_SharedTripCT) as RadioGroup
+        etEmail = findViewById<View>(R.id.et_EmailCT) as EditText
+    }
+
+    fun Add(){
+        firestoreDB = FirebaseFirestore.getInstance()
+        val email = etEmail.text.toString().toLowerCase().trim()
+        var person: String = ""
+        if(!TextUtils.isEmpty(email))
+        {
+            firestoreDB!!.collection("Users").whereEqualTo("email", email).get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (doc in task.result) {
+                        val user = doc.toObject<User>(User::class.java)
+                        user.id = doc.id
+                        person = user.firstName.toString() + " " + user.lastName.toString()
+                    }
+                    val shared = SharedWith(email, person)
+                    sharedWith.add(shared)
+                } else {
+                    Log.d("TAG", "Error getting documents: ", task.exception)
+                }
+            }
+        }
+    }
+
+    fun Load(){
+        mAdapter = TripSharedRecyclerViewAdapter(sharedWith, applicationContext)
+        val mLayoutManager = LinearLayoutManager(applicationContext)
+        rv_sharedWithCT.layoutManager = mLayoutManager
+        rv_sharedWithCT.itemAnimator = DefaultItemAnimator()
+        rv_sharedWithCT.adapter = mAdapter
     }
 
 
@@ -300,111 +398,27 @@ class CreateTrip : AppCompatActivity() {
         val tripBegining = etdBegining.text.toString()
         val tripEnd = etdEnd.text.toString()
 
+        val email = FirebaseAuth.getInstance().currentUser.email
+
+        var person: String = "person"
+        val shared = SharedWith(email, person)
+        sharedWith.add(shared)
+
+
         if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName)){
-
-            /*firestoreDB = FirebaseFirestore.getInstance()
-            val trip = Trip(
-                tripName,
-                multiplePlaces,
-                places,
-                sharedTrip,
-                sharedWith,
-                tripBegining,
-                tripEnd,
-                tripType,
-                created
-            )
-
-            firestoreDB!!.collection("Trips")
-                .add(trip)
-                .addOnSuccessListener { documentReference ->
-                    docId = documentReference.id
-                    Toast.makeText(
-                        applicationContext, "Trip created",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                .addOnFailureListener {
-                    Toast.makeText(
-                        applicationContext, "Error",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }*/
 
             lateinit var intent: Intent
 
-            if(multiplePlaces == true)
-                intent = Intent(this, MultiplePlacesTrip::class.java)
-            else
-                intent = Intent(this, OnePlaceTrip::class.java)
-
-            //intent.putExtra("id", docId)
-            //intent = Intent(this, MyTrips::class.java)
-
-            /*val trip = Trip(
-                tripName,
-                multiplePlaces,
-                places,
-                sharedTrip,
-                sharedWith,
-                tripBegining,
-                tripEnd,
-                tripType,
-                created
-            )*/
+            intent = Intent(this, MultiplePlacesTrip::class.java)
 
             intent.putExtra("name", tripName)
             intent.putExtra("begining", tripBegining)
             intent.putExtra("end", tripEnd)
             intent.putExtra("type", tripType)
             intent.putExtra("created", created)
+            GlobalVariables.sharedWithList = sharedWith
             startActivity(intent)
         }
-
-        /*val simpleDateFormat = DateTimeFormatter.ISO_DATE
-        val current = LocalDate.parse(Date().toString(), simpleDateFormat)
-        val beginingDate = LocalDate.parse(tripBegining, simpleDateFormat)
-        val endDate = LocalDate.parse(tripEnd, simpleDateFormat)
-
-        if(beginingDate.isAfter(current) && !beginingDate.isEqual(current)){
-            if(endDate.isAfter(current) && !endDate.isEqual(current)){
-                if(endDate.isAfter(beginingDate) && !endDate.isEqual(beginingDate)){
-                    Toast.makeText(applicationContext, "Tudo ok!",
-                        Toast.LENGTH_SHORT).show()
-                }
-                else
-                    Toast.makeText(applicationContext, "Data de fim anterior à data de inicio!",
-                        Toast.LENGTH_SHORT).show()
-            }
-            else
-                Toast.makeText(applicationContext, "Data de fim anterior à data atual!",
-                    Toast.LENGTH_SHORT).show()
-        }
-        else
-            Toast.makeText(applicationContext, "Data de inicio anterior à data atual!",
-                Toast.LENGTH_SHORT).show()*/
-
-        /*val current = LocalDate.now()
-
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val now = current.format(formatter)
-
-        var dateVerification: Int = 0
-        if(verifyDates(now, tripBegining))
-            if(verifyDates(now, tripEnd))
-                if(verifyDates(tripBegining, tripEnd))
-                    dateVerification = 1
-
-        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripPlace) && !TextUtils.isEmpty(tripBegining) && !TextUtils.isEmpty(tripEnd)){
-            if(dateVerification == 1){
-
-                goMyTrips()
-            }
-            else
-                Toast.makeText(
-                    applicationContext, "Error",
-                    Toast.LENGTH_SHORT)
-        }*/
     }
 
     fun goMyTrips(){

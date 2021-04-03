@@ -8,16 +8,6 @@
     tools:openDrawer="start">
 
     <!-- Main Activity -->
-    <TextView
-        android:id="@+id/tv_SharedTrip2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/tvSharedTrip"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@+id/rb_YesMP"
-        tools:layout_editor_absoluteX="10dp" />
 
     <LinearLayout
         android:id="@+id/main_activity_content_id"
@@ -87,7 +77,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/etd_TripBeginingMP"
+                    android:id="@+id/et_EmailCT"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -108,7 +98,7 @@
                     android:inputType="date"
                     android:text="@string/etdTripEnd"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etd_TripBeginingMP" />
+                    app:layout_constraintTop_toBottomOf="@+id/et_EmailCT" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_PlacesMP"
@@ -122,7 +112,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/etd_TripEndMP" />
 
                 <Button
-                    android:id="@+id/b_AddPlaceMP"
+                    android:id="@+id/b_AddPersonCT"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="100dp"

@@ -8,16 +8,6 @@
     tools:openDrawer="start">
 
     <!-- Main Activity -->
-    <TextView
-        android:id="@+id/tv_SharedTrip2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/tvSharedTrip"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@+id/rb_YesMP"
-        tools:layout_editor_absoluteX="10dp" />
 
     <LinearLayout
         android:id="@+id/main_activity_content_id"
@@ -77,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="40dp"
                     android:layout_marginEnd="10dp"
                     android:ems="10"
                     android:hint="@string/etTripName"
@@ -94,9 +84,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
                     android:ems="10"
+                    android:focusable="false"
                     android:hint="@string/etdTripBegining"
                     android:inputType="date"
                     android:textColorHint="#000000"
@@ -109,9 +100,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
                     android:ems="10"
+                    android:focusable="false"
                     android:hint="@string/etdTripEnd"
                     android:inputType="date"
                     android:textColorHint="#000000"
@@ -120,102 +112,23 @@
                     app:layout_constraintTop_toBottomOf="@+id/etd_TripBeginingCT" />
 
                 <TextView
-                    android:id="@+id/tv_MultiplePlacesCT"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
-                    android:text="@string/tvMultiplePlaces"
-                    android:textColor="#000000"
-                    android:textSize="15sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etd_TripEndCT" />
-
-                <RadioGroup
-                    android:id="@+id/rg_MultiplePlacesCT"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="10dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_MultiplePlacesCT">
-
-                    <RadioButton
-                        android:id="@+id/rb_YesMPCT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rbYes" />
-
-                    <RadioButton
-                        android:id="@+id/rb_NoMPCT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:layout_weight="1"
-                        android:text="@string/rbNo" />
-                </RadioGroup>
-
-                <TextView
-                    android:id="@+id/tv_SharedTripCT"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
-                    android:text="@string/tvSharedTrip"
-                    android:textColor="#000000"
-                    android:textSize="15sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rg_MultiplePlacesCT" />
-
-                <RadioGroup
-                    android:id="@+id/rg_SharedTripCT"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="10dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_SharedTripCT">
-
-                    <RadioButton
-                        android:id="@+id/rb_YesSTCT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rbYes" />
-
-                    <RadioButton
-                        android:id="@+id/rb_NoSTCT"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:text="@string/rbNo" />
-                </RadioGroup>
-
-                <TextView
                     android:id="@+id/tv_TripTypeCT"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="20dp"
                     android:text="@string/tvTripType"
                     android:textColor="#000000"
                     android:textSize="15sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rg_SharedTripCT" />
+                    app:layout_constraintTop_toBottomOf="@+id/etd_TripEndCT" />
 
                 <Spinner
                     android:id="@+id/s_TripTypeCT"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
                     android:entries="@array/spTripTypes"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -223,12 +136,48 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_TripTypeCT" />
 
+                <EditText
+                    android:id="@+id/et_EmailCT"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:ems="10"
+                    android:hint="@string/etEmail"
+                    android:inputType="textEmailAddress"
+                    android:textColorHint="#000000"
+                    app:layout_constraintEnd_toStartOf="@+id/b_AddPersonCT"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/s_TripTypeCT" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_sharedWithCT"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/b_AddPersonCT" />
+
+                <Button
+                    android:id="@+id/b_AddPersonCT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/bAddPerson"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/s_TripTypeCT" />
+
                 <Button
                     android:id="@+id/b_Next"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="10dp"
                     android:text="@string/bNext"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />

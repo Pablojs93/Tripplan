@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.pjas.tripplan.App.CreateTrip.CreateTrip
 import com.pjas.tripplan.Classes.Database.Adapter.TripRecyclerViewAdapter
+import com.pjas.tripplan.Classes.Database.Model.SharedWith
 import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
@@ -37,6 +38,11 @@ import com.pjas.tripplan.Login.Login
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.mytrips_home_layout.*
 import kotlinx.android.synthetic.main.trips_layout.view.*
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.regex.Pattern
 
 class MyTrips : AppCompatActivity() {
 
@@ -55,7 +61,8 @@ class MyTrips : AppCompatActivity() {
     )
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mytrips_home_layout)
 
@@ -69,24 +76,31 @@ class MyTrips : AppCompatActivity() {
         navigation_rv.setHasFixedSize(true)
 
         // Add Item Touch Listener
-        navigation_rv.addOnItemTouchListener(RecyclerTouchListener(this, object : ClickListener {
-            override fun onClick(view: View, position: Int) {
-                when (position) {
-                    0 -> {
+        navigation_rv.addOnItemTouchListener(RecyclerTouchListener(this, object : ClickListener
+        {
+            override fun onClick(view: View, position: Int)
+            {
+                when (position)
+                {
+                    0 ->
+                    {
                         // # My trips Fragment
                         goMyTrips()
                     }
-                    1 -> {
+                    1 ->
+                    {
                         // Create trip Fragment
                         goCreateTrip()
                     }
-                    2 -> {
+                    2 ->
+                    {
                         // Signout
                         goLogin()
                     }
                 }
                 // Don't highlight the 'Profile' and 'Like us on Facebook' item row
-                if (position != 6 && position != 4) {
+                if (position != 6 && position != 4)
+                {
                     updateAdapter(position)
                 }
                 Handler().postDelayed({
@@ -103,30 +117,34 @@ class MyTrips : AppCompatActivity() {
         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, myTrips).commit()
 
         // Close the soft keyboard when you open or close the Drawer
-        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, activity_main_toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        ) {
-            override fun onDrawerClosed(drawerView: View) {
+        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, activity_main_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        {
+            override fun onDrawerClosed(drawerView: View)
+            {
                 // Triggered once the drawer closes
                 super.onDrawerClosed(drawerView)
-                try {
-                    val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                try
+                {
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-                } catch (e: Exception) {
+                }
+                catch (e: Exception)
+                {
                     e.stackTrace
                 }
             }
 
-            override fun onDrawerOpened(drawerView: View) {
+            override fun onDrawerOpened(drawerView: View)
+            {
                 // Triggered once the drawer opens
                 super.onDrawerOpened(drawerView)
-                try {
-                    val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                try
+                {
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
-                } catch (e: Exception) {
+                }
+                catch (e: Exception)
+                {
                     e.stackTrace
                 }
             }
@@ -139,17 +157,21 @@ class MyTrips : AppCompatActivity() {
         navigation_header_img.setImageResource(R.drawable.ic_baseline_airplanemode_active_24)
 
         // Set background of Drawer
-        navigation_layout.setBackgroundColor(ContextCompat.getColor(this,
-            R.color.colorPrimary
-        ))
+        navigation_layout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+
+        val current = LocalDate.now()
+
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val now = current.format(formatter)
 
         firestoreDB = FirebaseFirestore.getInstance()
 
-        loadTripsList()
+        //loadMyTripsList()
+        loadSharedTripsList()
 
-        val id = FirebaseAuth.getInstance().currentUser.uid
+        val email = FirebaseAuth.getInstance().currentUser.email
 
-        firestoreListener = firestoreDB!!
+        /*firestoreListener = firestoreDB!!
             .collection("Trips")
             .whereEqualTo("created", id)
             .addSnapshotListener(EventListener { documentSnapshots, e ->
@@ -170,11 +192,131 @@ class MyTrips : AppCompatActivity() {
 
                 mAdapter = TripRecyclerViewAdapter(tripsList, applicationContext, firestoreDB!!)
                 rv_FutureTrips.adapter = mAdapter
-            })
+            })*/
 
+        firestoreDB!!.collection("Trips").get().addOnCompleteListener { task ->
+            if (task.isSuccessful)
+            {
+                val tripsList = mutableListOf<Trip>()
+                val myTripsList = mutableListOf<Trip>()
+                var shared = mutableListOf<SharedWith>()
+
+                for (doc in task.result)
+                {
+                    val trip = doc.toObject<Trip>(Trip::class.java)
+                    trip.id = doc.id
+                    tripsList.add(trip)
+                }
+
+                for (trip: Trip in tripsList)
+                {
+                    var dateVerification: Int = 0
+                    if(verifyDates(now, trip.tripBegining.toString()))
+                        dateVerification = 1
+
+                    if(dateVerification == 1)
+                    {
+                        shared = trip.sharedWith as MutableList<SharedWith>
+                        for (s: SharedWith in shared)
+                        {
+                            if (s.email.equals(email))
+                                myTripsList.add(trip)
+                        }
+                    }
+                }
+
+                mAdapter = TripRecyclerViewAdapter(myTripsList, applicationContext, firestoreDB!!)
+                val mLayoutManager = LinearLayoutManager(applicationContext)
+                rv_FutureTrips.layoutManager = mLayoutManager
+                rv_FutureTrips.itemAnimator = DefaultItemAnimator()
+                rv_FutureTrips.adapter = mAdapter
+            }
+            else
+            {
+                Log.d("TAG", "Error getting documents: ", task.exception)
+            }
+        }
     }
 
-    private fun loadTripsList() {
+    fun verifyDates(f: String, s: String) : Boolean{
+        val delim = "/"
+
+        val first = Pattern.compile(delim).split(f.toString())
+        val second = Pattern.compile(delim).split(s.toString())
+
+        val dayFirst: Int = first.get(0).toInt()
+        val monthFirst: Int = first.get(1).toInt()
+        val yearFirst: Int = first.get(2).toInt()
+
+        val daySecond: Int = second.get(0).toInt()
+        val monthSecond: Int = second.get(1).toInt()
+        val yearSecond: Int = second.get(2).toInt()
+
+        if(yearSecond > yearFirst)
+            return true
+        if(yearSecond == yearFirst && monthSecond > monthFirst)
+            return true
+        if(yearSecond == yearFirst && monthSecond == monthFirst && daySecond > dayFirst)
+            return true
+
+        return false
+    }
+
+    private fun loadSharedTripsList()
+    {
+        val email = FirebaseAuth.getInstance().currentUser.email
+
+        val current = LocalDate.now()
+
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val now = current.format(formatter)
+
+        firestoreDB!!.collection("Trips").get().addOnCompleteListener { task ->
+            if (task.isSuccessful)
+            {
+                val tripsList = mutableListOf<Trip>()
+                val myTripsList = mutableListOf<Trip>()
+                var shared = mutableListOf<SharedWith>()
+                for (doc in task.result)
+                {
+                    val trip = doc.toObject<Trip>(Trip::class.java)
+                    trip.id = doc.id
+                    tripsList.add(trip)
+                }
+
+                for (trip: Trip in tripsList)
+                {
+
+                    var dateVerification: Int = 0
+                    if (verifyDates(now, trip.tripBegining.toString()))
+                        dateVerification = 1
+
+                    if (dateVerification == 1)
+                    {
+                        shared = trip.sharedWith as MutableList<SharedWith>
+                        for (s: SharedWith in shared)
+                        {
+                            if (s.email.equals(email))
+                                myTripsList.add(trip)
+                        }
+                    }
+
+
+                    mAdapter = TripRecyclerViewAdapter(myTripsList, applicationContext, firestoreDB!!)
+                    val mLayoutManager = LinearLayoutManager(applicationContext)
+                    rv_FutureTrips.layoutManager = mLayoutManager
+                    rv_FutureTrips.itemAnimator = DefaultItemAnimator()
+                    rv_FutureTrips.adapter = mAdapter
+                }
+            }
+            else
+            {
+                Log.d("TAG", "Error getting documents: ", task.exception)
+            }
+        }
+    }
+
+    /*private fun loadMyTripsList() {
         val id = FirebaseAuth.getInstance().currentUser.uid
         firestoreDB!!
             .collection("Trips")
@@ -199,42 +341,53 @@ class MyTrips : AppCompatActivity() {
                     Log.d("TAG", "Error getting documents: ", task.exception)
                 }
             }
-    }
+    }*/
 
     // // View Holder Class
 
-    fun goLogin(){
+    fun goLogin()
+    {
         FirebaseAuth.getInstance().signOut()
         finish()
         val intent = Intent(this, Login::class.java)
         startActivity(intent)
     }
 
-    fun goMyTrips(){
+    fun goMyTrips()
+    {
         val intent = Intent(this, MyTrips::class.java)
         startActivity(intent)
     }
 
-    fun goCreateTrip(){
+    fun goCreateTrip()
+    {
         val intent = Intent(this, CreateTrip::class.java)
         startActivity(intent)
     }
 
-    private fun updateAdapter(highlightItemPos: Int) {
+    private fun updateAdapter(highlightItemPos: Int)
+    {
         adapter = NavigationRVAdapter(items, highlightItemPos)
         navigation_rv.adapter = adapter
         adapter.notifyDataSetChanged()
     }
 
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+    override fun onBackPressed()
+    {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        {
             drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
+        }
+        else
+        {
             // Checking for fragment count on back stack
-            if (supportFragmentManager.backStackEntryCount > 0) {
+            if (supportFragmentManager.backStackEntryCount > 0)
+            {
                 // Go to the previous fragment
                 supportFragmentManager.popBackStack()
-            } else {
+            }
+            else
+            {
                 // Exit the app
                 super.onBackPressed()
             }

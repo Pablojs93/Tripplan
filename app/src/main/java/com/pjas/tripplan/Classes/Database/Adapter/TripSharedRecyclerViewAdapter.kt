@@ -6,33 +6,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.pjas.tripplan.Classes.Database.Model.TripPlace
+import com.pjas.tripplan.Classes.Database.Model.SharedWith
 import com.pjas.tripplan.R
 
-class TripPlaceRecyclerViewAdapter (
-    private val tripsPlaceList: MutableList<TripPlace>,
+class TripSharedRecyclerViewAdapter(
+    private val sharedWithList: MutableList<SharedWith>,
     private val context: Context)
-    : RecyclerView.Adapter<TripPlaceRecyclerViewAdapter.ViewHolder>() {
+: RecyclerView.Adapter<TripSharedRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TripPlaceRecyclerViewAdapter.ViewHolder {
+    ): TripSharedRecyclerViewAdapter.ViewHolder {
         val view =
-            LayoutInflater.from(parent!!.context).inflate(R.layout.tripplace_layout, parent, false)
+            LayoutInflater.from(parent!!.context).inflate(R.layout.sharedwith_layout, parent, false)
         return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-        return tripsPlaceList.size
+        return sharedWithList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val tripPlace = tripsPlaceList[position]
+        val sharedWith = sharedWithList[position]
 
-        holder!!.place.text = tripPlace.place
-        holder!!.begining.text = tripPlace.begining
-        holder!!.end.text = tripPlace.end
+        holder!!.email.text = sharedWith.email
+        holder!!.name.text = sharedWith.name
 
         /*holder.details.setOnClickListener {
             getDetails(trip)
@@ -40,15 +39,14 @@ class TripPlaceRecyclerViewAdapter (
     }
 
     inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
-        internal var place: TextView
-        internal var begining: TextView
-        internal var end: TextView
+        internal var email: TextView
+        internal var name: TextView
+
         //internal var delete: ImageButton
 
         init {
-            place = view.findViewById(R.id.tv_Email)
-            begining = view.findViewById(R.id.tv_Begining)
-            end = view.findViewById(R.id.tv_End)
+            email = view.findViewById(R.id.tv_Email)
+            name = view.findViewById(R.id.tv_Name)
 
             //delete = view.findViewById(R.id.b_Delete)
         }

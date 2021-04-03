@@ -6,7 +6,7 @@ class Trip {
     var id: String? = null
     var name: String? = null
     var multiplePlaces: List<TripPlace>? = null
-    var sharedWith: List<String>? = null
+    var sharedWith: List<SharedWith>? = null
     var tripBegining: String? = null
     var tripEnd: String? = null
     var type: String? = null
@@ -14,7 +14,7 @@ class Trip {
 
     constructor() {}
 
-    constructor(name: String, multiplePlaces: List<TripPlace>?, sharedWith: List<String>?, tripBegining: String, tripEnd: String, type: String, created: String) {
+    constructor(name: String, multiplePlaces: List<TripPlace>?, sharedWith: ArrayList<SharedWith>, tripBegining: String, tripEnd: String, type: String, created: String) {
         this.name = name
         this.multiplePlaces = multiplePlaces
         this.sharedWith = sharedWith

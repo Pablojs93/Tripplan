@@ -2,42 +2,39 @@ package com.pjas.tripplan.App.CreateTrip.MultiplePlaces
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.location.places.Place
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.CreateTrip.CreateTrip
 import com.pjas.tripplan.App.MyTrips.MyTrips
 import com.pjas.tripplan.Classes.Database.Adapter.TripPlaceRecyclerViewAdapter
-import com.pjas.tripplan.Classes.Database.Adapter.TripRecyclerViewAdapter
+import com.pjas.tripplan.Classes.Database.Model.SharedWith
 import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.Classes.Database.Model.TripPlace
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
+import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
-import kotlinx.android.synthetic.main.createtrip_home_layout.*
 import kotlinx.android.synthetic.main.createtrip_home_layout.activity_main_toolbar
 import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_header_img
 import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_layout
 import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_rv
 import kotlinx.android.synthetic.main.multiple_places_trip_layout.*
-import kotlinx.android.synthetic.main.mytrips_home_layout.*
+
 
 class MultiplePlacesTrip : AppCompatActivity() {
 
@@ -55,7 +52,7 @@ class MultiplePlacesTrip : AppCompatActivity() {
     var tripEnd = ""
 
     val placesList = ArrayList<TripPlace>()
-    val sharedWith = ArrayList<String>()
+    var sharedWith = GlobalVariables.sharedWithList
 
     private var firestoreDB: FirebaseFirestore? = null
 
@@ -63,9 +60,6 @@ class MultiplePlacesTrip : AppCompatActivity() {
     private lateinit var adapter: NavigationRVAdapter
 
     //lateinit var placesClient: PlacesClient
-
-    private var sharedTrip: Boolean? = false
-    private var multiplePlaces: Boolean? = false
 
     private var mAdapter: TripPlaceRecyclerViewAdapter? = null
 
@@ -87,7 +81,6 @@ class MultiplePlacesTrip : AppCompatActivity() {
         created = bundle!!.getString("created").toString()
         tripBegining = bundle!!.getString("begining").toString()
         tripEnd = bundle!!.getString("end").toString()
-
         //placesClient = Places.createClient(this)
 
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -137,7 +130,8 @@ class MultiplePlacesTrip : AppCompatActivity() {
         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, myTrips).commit()
 
         // Close the soft keyboard when you open or close the Drawer
-        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, activity_main_toolbar,
+        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(
+            this, drawerLayout, activity_main_toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         ) {
@@ -174,9 +168,11 @@ class MultiplePlacesTrip : AppCompatActivity() {
 
         // Set background of Drawer
         navigation_layout.setBackgroundColor(
-            ContextCompat.getColor(this,
-            R.color.colorPrimary
-        ))
+            ContextCompat.getColor(
+                this,
+                R.color.colorPrimary
+            )
+        )
 
         firestoreDB = FirebaseFirestore.getInstance()
 
@@ -195,9 +191,9 @@ class MultiplePlacesTrip : AppCompatActivity() {
     fun init(){
         bNext = findViewById<View>(R.id.b_NextMP) as Button
         etName = findViewById<View>(R.id.et_TripPlaceMP) as EditText
-        etdBegining = findViewById<View>(R.id.etd_TripBeginingMP) as EditText
+        etdBegining = findViewById<View>(R.id.et_EmailCT) as EditText
         etdEnd = findViewById<View>(R.id.etd_TripEndMP) as EditText
-        bAdd = findViewById<View>(R.id.b_AddPlaceMP) as Button
+        bAdd = findViewById<View>(R.id.b_AddPersonCT) as Button
     }
 
     fun Add(){
@@ -205,9 +201,13 @@ class MultiplePlacesTrip : AppCompatActivity() {
         val tripBegining = etdBegining.text.toString()
         val tripEnd = etdEnd.text.toString()
 
-        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName)){
+        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(
+                tripName
+            )){
+            val place = TripPlace(tripName, tripBegining, tripEnd)
+            placesList.add(place)
 
-            firestoreDB = FirebaseFirestore.getInstance()
+            /*firestoreDB = FirebaseFirestore.getInstance()
             val place = TripPlace(tripName, tripBegining, tripEnd)
 
             firestoreDB!!.collection("TripPlaces")
@@ -221,7 +221,7 @@ class MultiplePlacesTrip : AppCompatActivity() {
                         applicationContext, "Error",
                         Toast.LENGTH_SHORT
                     ).show()
-                }
+                }*/
         }
 
         /*val simpleDateFormat = DateTimeFormatter.ISO_DATE
@@ -271,7 +271,13 @@ class MultiplePlacesTrip : AppCompatActivity() {
     }
 
     fun Load(){
-        firestoreDB!!
+        mAdapter = TripPlaceRecyclerViewAdapter(placesList, applicationContext)
+        val mLayoutManager = LinearLayoutManager(applicationContext)
+        rv_PlacesMP.layoutManager = mLayoutManager
+        rv_PlacesMP.itemAnimator = DefaultItemAnimator()
+        rv_PlacesMP.adapter = mAdapter
+
+        /*firestoreDB!!
             .collection("TripPlaces")
             .get()
             .addOnCompleteListener { task ->
@@ -292,7 +298,7 @@ class MultiplePlacesTrip : AppCompatActivity() {
                 } else {
                     Log.d("TAG", "Error getting documents: ", task.exception)
                 }
-            }
+            }*/
     }
 
     fun Create(){
@@ -303,8 +309,10 @@ class MultiplePlacesTrip : AppCompatActivity() {
         firestoreDB!!.collection("Trips")
             .add(trip)
             .addOnSuccessListener { documentReference ->
-                Toast.makeText(applicationContext, "Trip created",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext, "Trip created",
+                    Toast.LENGTH_SHORT
+                ).show()
             }.addOnFailureListener {
                 Toast.makeText(
                     applicationContext, "Error",

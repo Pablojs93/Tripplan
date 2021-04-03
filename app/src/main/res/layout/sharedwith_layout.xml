@@ -27,14 +27,7 @@
             android:text="TextView" />
 
         <TextView
-            android:id="@+id/tv_Begining"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/tv_End"
+            android:id="@+id/tv_Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"

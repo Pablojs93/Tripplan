@@ -10,12 +10,8 @@
     <string name="etName">Nome</string>
     <string name="etSurname">Apelido</string>
     <string name="etTripName">Nome da viagem</string>
-    <string name="tvMultiplePlaces">Múltiplos destinos</string>
-    <string name="rbYes">"Sim "</string>
-    <string name="rbNo">Não</string>
     <string name="bNext">Seguinte</string>
     <string name="tvTripType">Tipo de viagem</string>
-    <string name="tvSharedTrip">Viagem partilhada</string>
     <string-array name="spTripTypes">
         <item>Negócio</item>
         <item>Prazer</item>
@@ -25,4 +21,7 @@
     <string name="etdTripBegining">Data de início</string>
     <string name="etdTripEnd">Data de fim</string>
     <string name="bAddTrip">Adicionar viagem</string>
+    <string name="bAddPerson">Adicionar pessoa</string>
+    <string name="etdPlaceBegining">Data de início</string>
+    <string name="etdPlaceEnd">Data de fim</string>
 </resources>

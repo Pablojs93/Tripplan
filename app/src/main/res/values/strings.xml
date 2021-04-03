@@ -20,10 +20,8 @@
 
     <!-- Create trip -->
     <string name="etTripName">Trip name</string>
-    <string name="tvMultiplePlaces">Multiple places</string>
-    <string name="rbYes">Yes</string>
-    <string name="rbNo">No</string>
-    <string name="tvSharedTrip">Shared trip</string>
+    <string name="etdTripBegining">Trip begining date</string>
+    <string name="etdTripEnd">Trip end date</string>
     <string name="tvTripType">Trip type</string>
     <string-array name="spTripTypes">
         <item>Business</item>
@@ -31,11 +29,12 @@
         <item>Other</item>
     </string-array>
     <string name="bNext">Next</string>
+    <string name="bAddPerson">Add person</string>
 
     <!-- Create trip multiple places -->
     <string name="etTripPlace">Trip place</string>
-    <string name="etdTripBegining">Begining date</string>
-    <string name="etdTripEnd">End date</string>
+    <string name="etdPlaceBegining">Begining date</string>
+    <string name="etdPlaceEnd">End date</string>
     <string name="bAddTrip">Add trip</string>
 
 </resources>
