@@ -3,14 +3,15 @@ package com.pjas.tripplan.Classes.Database.Model
 import java.util.HashMap
 
 class TripPlace {
-    var id: String? = null
+    var id: Int? = null
     var place: String? = null
     var begining: String? = null
     var end: String? = null
 
     constructor() {}
 
-    constructor(place: String, begining: String, end: String) {
+    constructor(place: String, begining: String, end: String)
+    {
         this.place = place
         this.begining = begining
         this.end = end
@@ -19,6 +20,7 @@ class TripPlace {
     fun toMap(): Map<String, Any> {
 
         val result = HashMap<String, Any>()
+        result.put("id", id!!)
         result.put("place", place!!)
         result.put("begining", begining!!)
         result.put("end", end!!)

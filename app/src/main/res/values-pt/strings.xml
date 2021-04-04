@@ -20,8 +20,15 @@
     <string name="etTripPlace">Sítio da viagem</string>
     <string name="etdTripBegining">Data de início</string>
     <string name="etdTripEnd">Data de fim</string>
-    <string name="bAddTrip">Adicionar viagem</string>
     <string name="bAddPerson">Adicionar pessoa</string>
     <string name="etdPlaceBegining">Data de início</string>
     <string name="etdPlaceEnd">Data de fim</string>
+    <string name="BeginingDate">Data de início</string>
+    <string name="EndDate">Data de fim</string>
+    <string name="tvPlaceName">Nome do sítio</string>
+    <string name="bDeletePlace">Apagar sítio</string>
+    <string name="bEditPlace">Editar sítio</string>
+    <string name="bAddPlace">Adicionar sítio</string>
+    <string name="bEditPerson">Editar pessoa</string>
+    <string name="bDeletePerson">Apagar pessoa</string>
 </resources>

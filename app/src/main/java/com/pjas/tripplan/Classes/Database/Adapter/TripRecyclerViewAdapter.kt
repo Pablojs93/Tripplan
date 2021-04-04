@@ -16,29 +16,26 @@ import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.trip_layout.view.*
 
-class TripRecyclerViewAdapter (
-    private val tripsList: MutableList<Trip>,
-    private val context: Context,
-    private val firestoreDB: FirebaseFirestore)
-    : RecyclerView.Adapter<TripRecyclerViewAdapter.ViewHolder>() {
+class TripRecyclerViewAdapter
+    (private val tripsList: MutableList<Trip>, private val context: Context, private val firestoreDB: FirebaseFirestore) : RecyclerView.Adapter<TripRecyclerViewAdapter.ViewHolder>()
+{
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): TripRecyclerViewAdapter.ViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripRecyclerViewAdapter.ViewHolder
+    {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.trip_layout, parent, false)
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
+    override fun getItemCount(): Int
+    {
         return tripsList.size
     }
 
-    override fun onBindViewHolder(holder: TripRecyclerViewAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TripRecyclerViewAdapter.ViewHolder, position: Int)
+    {
         val trip = tripsList[position]
-
 
         holder!!.name.text = trip.name
         holder!!.begining.text = trip.tripBegining
@@ -46,7 +43,7 @@ class TripRecyclerViewAdapter (
 
         val childLayoutManager = LinearLayoutManager(holder.itemView.rv_Places.context, RecyclerView.VERTICAL, false)
 
-        holder.itemView.rv_Places.apply {
+        holder.itemView.rv_Places.apply{
             layoutManager = childLayoutManager
             adapter = PlaceAdapter(trip.multiplePlaces,context)
             setRecycledViewPool(viewPool)
@@ -57,14 +54,16 @@ class TripRecyclerViewAdapter (
         }
     }
 
-    inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view)
+    {
         internal var name: TextView
         internal var places: RecyclerView
         internal var begining: TextView
         internal var end: TextView
         internal var details: ImageButton
 
-        init {
+        init
+        {
             name = view.findViewById(R.id.tv_TripNameT)
             places = view.findViewById(R.id.rv_Places)
 
@@ -75,7 +74,8 @@ class TripRecyclerViewAdapter (
         }
     }
 
-    private fun getDetails(trip: Trip){
+    private fun getDetails(trip: Trip)
+    {
         val intent = Intent(context, TripDetails::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra("tripID", trip.id)

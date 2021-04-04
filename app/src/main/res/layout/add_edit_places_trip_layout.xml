@@ -70,8 +70,10 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginEnd="10dp"
                     android:ems="10"
+                    android:hint="@string/etTripPlace"
                     android:inputType="textPersonName"
                     android:text="@string/etTripPlace"
+                    android:textColorHint="#000000"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -83,8 +85,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="15dp"
                     android:ems="10"
+                    android:hint="@string/etdPlaceBegining"
                     android:inputType="date"
                     android:text="@string/etdTripBegining"
+                    android:textColorHint="#000000"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/et_TripPlaceMP" />
 
@@ -95,8 +99,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="15dp"
                     android:ems="10"
+                    android:hint="@string/etdPlaceEnd"
                     android:inputType="date"
                     android:text="@string/etdTripEnd"
+                    android:textColorHint="#000000"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/et_EmailCT" />
 
@@ -118,7 +124,7 @@
                     android:layout_marginStart="100dp"
                     android:layout_marginTop="72dp"
                     android:layout_marginEnd="10dp"
-                    android:text="@string/bAddTrip"
+                    android:text="@string/bAddPlace"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/etd_TripEndMP"

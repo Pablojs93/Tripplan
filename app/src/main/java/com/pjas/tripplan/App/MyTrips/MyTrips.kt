@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.provider.ContactsContract
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -30,10 +31,12 @@ import com.pjas.tripplan.App.CreateTrip.CreateTrip
 import com.pjas.tripplan.Classes.Database.Adapter.TripRecyclerViewAdapter
 import com.pjas.tripplan.Classes.Database.Model.SharedWith
 import com.pjas.tripplan.Classes.Database.Model.Trip
+import com.pjas.tripplan.Classes.Database.Model.User
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
+import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.Login.Login
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.mytrips_home_layout.*
@@ -53,6 +56,8 @@ class MyTrips : AppCompatActivity() {
 
     private var firestoreDB: FirebaseFirestore? = null
     private var firestoreListener: ListenerRegistration? = null
+
+    val usersList = mutableListOf<User>()
 
     private var items = arrayListOf(
         NavigationItemModel(R.drawable.ic_baseline_airplanemode_active_24, "My Trips"),
@@ -166,33 +171,13 @@ class MyTrips : AppCompatActivity() {
 
         firestoreDB = FirebaseFirestore.getInstance()
 
+        var userEmail = FirebaseAuth.getInstance().currentUser.email.toString().toLowerCase().trim()
+        getActualUserInformation(userEmail)
+
         //loadMyTripsList()
         loadSharedTripsList()
 
         val email = FirebaseAuth.getInstance().currentUser.email
-
-        /*firestoreListener = firestoreDB!!
-            .collection("Trips")
-            .whereEqualTo("created", id)
-            .addSnapshotListener(EventListener { documentSnapshots, e ->
-                if (e != null) {
-                    //Log.e(TAG, "Listen failed!", e)
-                    return@EventListener
-                }
-
-                val tripsList = mutableListOf<Trip>()
-
-                if (documentSnapshots != null) {
-                    for (doc in documentSnapshots) {
-                        val trip = doc.toObject(Trip::class.java)
-                        trip.id = doc.id
-                        tripsList.add(trip)
-                    }
-                }
-
-                mAdapter = TripRecyclerViewAdapter(tripsList, applicationContext, firestoreDB!!)
-                rv_FutureTrips.adapter = mAdapter
-            })*/
 
         firestoreDB!!.collection("Trips").get().addOnCompleteListener { task ->
             if (task.isSuccessful)
@@ -234,6 +219,20 @@ class MyTrips : AppCompatActivity() {
             else
             {
                 Log.d("TAG", "Error getting documents: ", task.exception)
+            }
+        }
+    }
+
+    fun getActualUserInformation (email: String)
+    {
+        firestoreDB!!.collection("Users").get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+
+                for (doc in task.result) {
+                    val user = doc.toObject<User>(User::class.java)
+                    user.id = doc.id
+                    GlobalVariables.usersList.add(user)
+                }
             }
         }
     }

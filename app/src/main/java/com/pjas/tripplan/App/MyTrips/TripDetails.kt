@@ -32,18 +32,18 @@ class TripDetails : AppCompatActivity() {
         begining = findViewById(R.id.tv_TripBeginingTD)
         end = findViewById(R.id.tv_TripEndTD)
 
-        //getData()
+        getData()
     }
 
-    /*private fun getData(){
+    private fun getData(){
         val data = firestoreDB?.collection("Trips")?.document(tripID!!)
         data?.get()?.addOnSuccessListener { documentSnapshot ->
             val trip=documentSnapshot.toObject(Trip::class.java)
 
             name.setText(trip?.name)
-            place.setText(trip?.places)
+            /*place.setText(trip?.places)
             begining.setText(trip?.begining)
-            end.setText(trip?.end)
+            end.setText(trip?.end)*/
         }
-    }*/
+    }
 }

@@ -1,7 +1,7 @@
 package com.pjas.tripplan.App.CreateTrip
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -21,49 +21,54 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.MyTrips.MyTrips
-import com.pjas.tripplan.Classes.Database.Adapter.TripSharedRecyclerViewAdapter
-import com.pjas.tripplan.Classes.Database.Model.SharedWith
-import com.pjas.tripplan.Classes.Database.Model.User
+import com.pjas.tripplan.Classes.Database.Adapter.TripPlaceRecyclerViewAdapter
+import com.pjas.tripplan.Classes.Database.Model.Trip
+import com.pjas.tripplan.Classes.Database.Model.TripPlace
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
 import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
-import kotlinx.android.synthetic.main.createtrip_home_layout.*
 import kotlinx.android.synthetic.main.createtrip_home_layout.activity_main_toolbar
 import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_header_img
 import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_layout
 import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_rv
+import kotlinx.android.synthetic.main.add_edit_places_trip_layout.*
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Pattern
+import kotlin.collections.ArrayList
 
 
-class CreateTrip : AppCompatActivity()
+class AddPlaces : AppCompatActivity()
 {
-    lateinit var drawerLayout: DrawerLayout
-    private lateinit var adapter: NavigationRVAdapter
 
     private lateinit var bNext: Button
     private lateinit var bAdd: Button
     private lateinit var etName: EditText
     private lateinit var etdBegining: EditText
     private lateinit var etdEnd: EditText
-    private lateinit var sType: Spinner
-    private lateinit var etEmail: EditText
-    var picker: DatePickerDialog? = null
 
-    val sharedWith = ArrayList<SharedWith>()
+    //var docId = ""
+    var tripName = ""
+    var tripType = ""
+    var created = ""
+    var tripBegining = ""
+    var tripEnd = ""
+    var id = 0
 
-    private var mAdapter: TripSharedRecyclerViewAdapter? = null
+    val placesList = ArrayList<TripPlace>()
+    var sharedWith = GlobalVariables.sharedWithList
 
     private var firestoreDB: FirebaseFirestore? = null
-    internal var id: String = ""
-    internal var shared: String = ""
 
-    var docId: String = ""
-    var cal = Calendar.getInstance()
+    lateinit var drawerLayout: DrawerLayout
+    private lateinit var adapter: NavigationRVAdapter
+
+    //lateinit var placesClient: PlacesClient
+
+    private var mAdapter: TripPlaceRecyclerViewAdapter? = null
+
 
     private var items = arrayListOf(
         NavigationItemModel(R.drawable.ic_baseline_airplanemode_active_24, "My Trips"),
@@ -71,14 +76,16 @@ class CreateTrip : AppCompatActivity()
         NavigationItemModel(R.drawable.ic_baseline_airplanemode_active_24, "Signout")
     )
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.createtrip_home_layout)
+        setContentView(R.layout.add_edit_places_trip_layout)
 
-        firestoreDB = FirebaseFirestore.getInstance()
-
+        tripName = GlobalVariables.newTripName
+        tripType = GlobalVariables.newTripType
+        created = GlobalVariables.newTripCreated
+        tripBegining = GlobalVariables.newTripBegining
+        tripEnd = GlobalVariables.newTripEnd
         //placesClient = Places.createClient(this)
 
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -121,7 +128,10 @@ class CreateTrip : AppCompatActivity()
                 {
                     updateAdapter(position)
                 }
-                Handler().postDelayed({ drawerLayout.closeDrawer(GravityCompat.START) }, 200)
+                Handler().postDelayed(
+                    {
+                        drawerLayout.closeDrawer(GravityCompat.START)
+                    }, 200)
             }
         }))
 
@@ -141,7 +151,7 @@ class CreateTrip : AppCompatActivity()
                 super.onDrawerClosed(drawerView)
                 try
                 {
-                    val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                 }
                 catch (e: Exception)
@@ -156,7 +166,7 @@ class CreateTrip : AppCompatActivity()
                 super.onDrawerOpened(drawerView)
                 try
                 {
-                    val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
                 }
                 catch (e: Exception)
@@ -175,24 +185,22 @@ class CreateTrip : AppCompatActivity()
         // Set background of Drawer
         navigation_layout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
 
-        init()
+        firestoreDB = FirebaseFirestore.getInstance()
 
+        init()
         showBeginingDate()
         showEndDate()
 
-        bAdd.setOnClickListener{
-            etEmail.clearFocus()
-            bAdd.requestFocus()
-            val email = etEmail.text.toString().toLowerCase().trim()
-            if(email.isNotEmpty()){
-                Add(email)
-                Load()
-            }
+        bAdd!!.setOnClickListener{
+            Add()
+            Load()
         }
 
-        bNext.setOnClickListener{
+        bNext!!.setOnClickListener{
             Create()
         }
+
+        Load()
     }
 
     fun showBeginingDate()
@@ -253,113 +261,58 @@ class CreateTrip : AppCompatActivity()
         }
     }
 
-    fun verifyDates(f: String, s: String) : Boolean
-    {
-        val delim = "/"
-
-        val first = Pattern.compile(delim).split(f.toString())
-        val second = Pattern.compile(delim).split(s.toString())
-
-        val dayFirst: Int = first.get(0).toInt()
-        val monthFirst: Int = first.get(1).toInt()
-        val yearFirst: Int = first.get(2).toInt()
-
-        val daySecond: Int = second.get(0).toInt()
-        val monthSecond: Int = second.get(1).toInt()
-        val yearSecond: Int = second.get(2).toInt()
-
-        if(yearSecond > yearFirst || yearFirst == yearSecond) {
-            if (monthSecond > monthFirst || monthFirst == monthSecond) {
-                if (daySecond > dayFirst)
-                    return true
-                else
-                    return false
-            } else
-                return false
-        }
-        else
-            return false
-    }
-
     fun init()
     {
-        bNext = findViewById<View>(R.id.b_Next) as Button
+        val buttonName: String = getString(R.string.bAddPlace)
+        bNext = findViewById<View>(R.id.b_NextMP) as Button
+        etName = findViewById<View>(R.id.et_TripPlaceMP) as EditText
+        etdBegining = findViewById<View>(R.id.et_EmailCT) as EditText
+        etdEnd = findViewById<View>(R.id.etd_TripEndMP) as EditText
         bAdd = findViewById<View>(R.id.b_AddPersonCT) as Button
-        etName = findViewById<View>(R.id.et_NameTripCT) as EditText
-        etdBegining = findViewById<View>(R.id.etd_TripBeginingCT) as EditText
-        etdEnd = findViewById<View>(R.id.etd_TripEndCT) as EditText
-        sType = findViewById<View>(R.id.s_TripTypeCT) as Spinner
-        etEmail = findViewById<View>(R.id.et_EmailCT) as EditText
+        bAdd.setText(buttonName)
+
+        if(!GlobalVariables.actualPlace.place.isNullOrBlank())
+        {
+            GlobalVariables.actualPlace = TripPlace()
+            GlobalVariables.placePosition = 0
+            etName.setText("")
+            etdBegining.setText("")
+            etdEnd.setText("")
+        }
     }
 
-    fun Add(email: String)
+    fun Add()
     {
-        //firestoreDB = FirebaseFirestore.getInstance()
-        var person: String = ""
-        for(user: User in GlobalVariables.usersList)
+        val name = etName.text.toString()
+        val begining = etdBegining.text.toString()
+        val end = etdEnd.text.toString()
+
+        if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(begining) && !TextUtils.isEmpty(end))
         {
-            if(user.email.equals(email)){
-                person = user.firstName.toString() + " " + user.lastName.toString()
-                val shared = SharedWith(user.email.toString(), person)
-                GlobalVariables.sharedWithList.add(shared)
-            }
+            val place = TripPlace(name, begining, end)
+            GlobalVariables.placeList.add(place)
         }
-        /*firestoreDB!!.collection("Users").whereEqualTo("email", email).get().addOnCompleteListener { task ->
-            if (task.isSuccessful)
-            {
-                for (doc in task.result)
-                {
-                    val user = doc.toObject<User>(User::class.java)
-                    user.id = doc.id
-                    person = user.firstName.toString() + " " + user.lastName.toString()
-                }
-                if(!TextUtils.isEmpty(person))
-                {
-                    val shared = SharedWith(email, person)
-                    GlobalVariables.sharedWithList.add(shared)
-                }
-            }
-            else
-            {
-                Log.d("TAG", "Error getting documents: ", task.exception)
-            }
-        }*/
     }
 
     fun Load()
     {
-        mAdapter = TripSharedRecyclerViewAdapter(GlobalVariables.sharedWithList, applicationContext)
+        mAdapter = TripPlaceRecyclerViewAdapter(GlobalVariables.placeList, applicationContext)
         val mLayoutManager = LinearLayoutManager(applicationContext)
-        rv_sharedWithCT.layoutManager = mLayoutManager
-        rv_sharedWithCT.itemAnimator = DefaultItemAnimator()
-        rv_sharedWithCT.adapter = mAdapter
+        rv_PlacesMP.layoutManager = mLayoutManager
+        rv_PlacesMP.itemAnimator = DefaultItemAnimator()
+        rv_PlacesMP.adapter = mAdapter
     }
 
-    fun Create()
-    {
-        val tripName = etName.text.toString()
-        val tripType = sType.selectedItem.toString()
-        val created = FirebaseAuth.getInstance().currentUser.uid
-        val tripBegining = etdBegining.text.toString()
-        val tripEnd = etdEnd.text.toString()
+    fun Create(){
+        firestoreDB = FirebaseFirestore.getInstance()
 
-        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName))
-        {
-            val email = FirebaseAuth.getInstance().currentUser.email.toString().toLowerCase().trim()
-            Add(email)
+        val trip = Trip(tripName, placesList, sharedWith, tripBegining, tripEnd, tripType, created)
 
-            lateinit var intent: Intent
-
-            intent = Intent(this, AddPlaces::class.java)
-
-            GlobalVariables.newTripName = tripName
-            GlobalVariables.newTripBegining = tripBegining
-            GlobalVariables.newTripEnd = tripEnd
-            GlobalVariables.newTripType = tripType
-            GlobalVariables.newTripCreated = created
-
-            startActivity(intent)
-        }
+        firestoreDB!!.collection("Trips").add(trip).addOnSuccessListener{ documentReference ->
+                Toast.makeText(applicationContext, "Trip created", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT).show()
+            }
     }
 
     fun goMyTrips()
