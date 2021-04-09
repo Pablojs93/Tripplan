@@ -1,19 +1,15 @@
 package com.pjas.tripplan.Classes.Database.Adapter
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.pjas.tripplan.App.CreateTrip.UpdatePlace
 import com.pjas.tripplan.Classes.Database.Model.Expense
-import com.pjas.tripplan.Classes.Database.Model.TripPlace
 import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
-import kotlin.math.cos
 
 class TripExpenseRecyclerViewAdapter (private val expensesList: MutableList<Expense>, private val context: Context) : RecyclerView.Adapter<TripExpenseRecyclerViewAdapter.ViewHolder>() {
 
@@ -33,6 +29,7 @@ class TripExpenseRecyclerViewAdapter (private val expensesList: MutableList<Expe
         holder!!.cost.text = expense.cost.toString()
         holder!!.type.text = expense.type
         holder!!.shared.text = expense.shared.toString()
+
 
         holder.delete.setOnClickListener {
             deleteExpense(expense)

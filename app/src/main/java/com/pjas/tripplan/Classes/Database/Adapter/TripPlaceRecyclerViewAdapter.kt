@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.pjas.tripplan.App.CreateTrip.UpdatePlace
 import com.pjas.tripplan.Classes.Database.Model.TripPlace
 import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
@@ -36,7 +35,7 @@ class TripPlaceRecyclerViewAdapter (private val tripsPlaceList: MutableList<Trip
         holder!!.end.text = tripPlace.end
 
         holder.edit.setOnClickListener {
-            editPlace(tripPlace, position)
+            //editPlace(tripPlace, position)
         }
 
         holder.delete.setOnClickListener {
@@ -64,7 +63,7 @@ class TripPlaceRecyclerViewAdapter (private val tripsPlaceList: MutableList<Trip
         }
     }
 
-    private fun editPlace(place: TripPlace, position: Int)
+   /* private fun editPlace(place: TripPlace, position: Int)
     {
         val intent = Intent(context, UpdatePlace::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -72,7 +71,7 @@ class TripPlaceRecyclerViewAdapter (private val tripsPlaceList: MutableList<Trip
         GlobalVariables.actualPlace = place
         GlobalVariables.placePosition = position
         context.startActivity(intent)
-    }
+    }*/
 
     private fun deletePlace(place: TripPlace)
     {
