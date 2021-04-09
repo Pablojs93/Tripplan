@@ -6,6 +6,146 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <EditText
+            android:id="@+id/etm_DescriptionAE"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="10dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="@string/etmExpenseDescription"
+            android:inputType="textMultiLine"
+            android:textColorHint="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_CostAE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:hint="@string/tvCost"
+            android:text="@string/tvCost"
+            android:textColor="#000000"
+            app:layout_constraintTop_toBottomOf="@+id/etm_DescriptionAE"
+            tools:layout_editor_absoluteX="15dp" />
+
+        <EditText
+            android:id="@+id/et_CostAE"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="10dp"
+            android:ems="10"
+            android:hint="@string/etCost"
+            android:inputType="numberDecimal"
+            android:textColorHint="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etm_DescriptionAE" />
+
+        <TextView
+            android:id="@+id/tv_ExpenseTypeAE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/tvExpenseType"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_CostAE" />
+
+        <Spinner
+            android:id="@+id/s_ExpenseTypeAE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:entries="@array/spExpenseTypes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_ExpenseTypeAE" />
+
+        <TextView
+            android:id="@+id/tv_SharedExpenseAE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/tvSharedExpenseAE"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/s_ExpenseTypeAE" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_SharedExpenseAE">
+
+            <RadioButton
+                android:id="@+id/rb_SharedYesAE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rbSharedNoAE"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/rb_SharedNoAE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="@string/rbSharedYesAE"
+                android:textColor="#000000" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/b_AddExpenseAE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="71dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/bAddExpenseAE"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup"
+            app:layout_constraintTop_toBottomOf="@+id/s_ExpenseTypeAE" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_ExpensesAE"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+
+        <Button
+            android:id="@+id/b_CreateTripAE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/bCreateTripAE"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_ExpensesAE" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

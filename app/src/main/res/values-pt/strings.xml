@@ -31,4 +31,19 @@
     <string name="bAddPlace">Adicionar sítio</string>
     <string name="bEditPerson">Editar pessoa</string>
     <string name="bDeletePerson">Apagar pessoa</string>
+    <string name="etmExpenseDescription">Descrição do gasto</string>
+    <string name="tvCost">Custo</string>
+    <string name="tvExpenseType">Tipo de gasto</string>
+    <string-array name="spExpenseTypes">
+        <item>Transporte (avião / carro / autocarro / comboio)</item>
+        <item>Alojamento (hotel / airbnb / casa alugada)</item>
+        <item>Comida e bebida (almoços / jantares / pequeno almoços)</item>
+        <item>Outros (souvenirs / bilhetes de concertos / bilhetes de desporto / museus / etc)</item>
+    </string-array>
+    <string name="tvSharedExpenseAE">Gasto partilhado</string>
+    <string name="rbSharedYesAE">Sim</string>
+    <string name="rbSharedNoAE">Não</string>
+    <string name="bAddExpenseAE">Adicionar gasto</string>
+    <string name="bCreateTripAE">Criar viagem</string>
+    <string name="bDeleteExpense">Apagar gasto</string>
 </resources>

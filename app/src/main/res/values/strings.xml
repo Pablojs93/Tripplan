@@ -44,4 +44,22 @@
     <string name="etdTripBegining">Begining date</string>
     <string name="etdTripEnd">End date</string>
 
+    <!-- Create expense -->
+    <string name="etmExpenseDescription">Expense description</string>
+    <string name="etCost" translatable="false">0.0</string>
+    <string name="tvCost">Cost</string>
+    <string name="tvExpenseType">Expense type</string>
+    <string-array name="spExpenseTypes">
+        <item>Transportation (airplane / car / bus / train)</item>
+        <item>Accomodation (hotel / airbnb / rented home)</item>
+        <item>Food and drinks (lunches / dinners / breakfasts)</item>
+        <item>Others (souvenirs / concert tickets / sport tickets / museums / etc)</item>
+    </string-array>
+    <string name="tvSharedExpenseAE">Shared expense</string>
+    <string name="rbSharedYesAE">Yes</string>
+    <string name="rbSharedNoAE">No</string>
+    <string name="bAddExpenseAE">Add expense</string>
+    <string name="bCreateTripAE">Create trip</string>
+    <string name="bDeleteExpense">Delete expense</string>
+
 </resources>

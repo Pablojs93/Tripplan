@@ -72,7 +72,6 @@
                     android:ems="10"
                     android:hint="@string/etTripPlace"
                     android:inputType="textPersonName"
-                    android:text="@string/etTripPlace"
                     android:textColorHint="#000000"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +86,6 @@
                     android:ems="10"
                     android:hint="@string/etdPlaceBegining"
                     android:inputType="date"
-                    android:text="@string/etdTripBegining"
                     android:textColorHint="#000000"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/et_TripPlaceMP" />
@@ -101,7 +99,6 @@
                     android:ems="10"
                     android:hint="@string/etdPlaceEnd"
                     android:inputType="date"
-                    android:text="@string/etdTripEnd"
                     android:textColorHint="#000000"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/et_EmailCT" />

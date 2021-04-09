@@ -11,15 +11,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
-import com.pjas.tripplan.Classes.Database.DatabaseModelUser
-import com.pjas.tripplan.Classes.Database.Model.Trip
 import com.pjas.tripplan.Classes.Database.Model.User
 import com.pjas.tripplan.R
 import java.util.regex.Pattern
@@ -116,7 +109,6 @@ class Register : AppCompatActivity() {
                                 //Log.d(TAG, "createUserWithEmail:success")
                                 userID = mAuth!!.currentUser!!.uid
 
-                                //var model=DatabaseModelUser(name.toString(), surname.toString(), email.toString())
 
                                 //mDatabaseReference!!.child(userId).setValue(model)
 

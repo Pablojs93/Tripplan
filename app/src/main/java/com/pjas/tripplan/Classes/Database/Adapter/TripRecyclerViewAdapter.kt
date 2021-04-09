@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -64,11 +63,11 @@ class TripRecyclerViewAdapter
 
         init
         {
-            name = view.findViewById(R.id.tv_TripNameT)
+            name = view.findViewById(R.id.tv_ExpenseDescriptionL)
             places = view.findViewById(R.id.rv_Places)
 
-            begining = view.findViewById(R.id.tv_TripBeginingT)
-            end = view.findViewById(R.id.tv_TripEndT)
+            begining = view.findViewById(R.id.tv_ExpenseCostL)
+            end = view.findViewById(R.id.tv_ExpenseTypeL)
 
             details = view.findViewById(R.id.b_TripDetailsT)
         }

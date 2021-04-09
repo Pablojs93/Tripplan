@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -31,10 +30,7 @@ import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
 import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.createtrip_home_layout.*
-import kotlinx.android.synthetic.main.createtrip_home_layout.activity_main_toolbar
-import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_header_img
-import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_layout
-import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_rv
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -42,6 +38,10 @@ import java.util.regex.Pattern
 
 class CreateTrip : AppCompatActivity()
 {
+    var handler: Handler = Handler()
+    var runnable: Runnable? = null
+    var delay = 5000
+
     lateinit var drawerLayout: DrawerLayout
     private lateinit var adapter: NavigationRVAdapter
 
@@ -91,34 +91,27 @@ class CreateTrip : AppCompatActivity()
         navigation_rv.setHasFixedSize(true)
 
         // Add Item Touch Listener
-        navigation_rv.addOnItemTouchListener(RecyclerTouchListener(this, object : ClickListener
-        {
-            override fun onClick(view: View, position: Int)
-            {
-                when (position)
-                {
-                    0 ->
-                    {
+        navigation_rv.addOnItemTouchListener(RecyclerTouchListener(this, object : ClickListener {
+            override fun onClick(view: View, position: Int) {
+                when (position) {
+                    0 -> {
                         // # My trips Fragment
                         goMyTrips()
                     }
-                    1 ->
-                    {
+                    1 -> {
                         // Create trip Fragment
                         //val createTrip = CreateTrip_()
                         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, createTrip).commit()
                         goCreateTrip()
                     }
-                    2 ->
-                    {
+                    2 -> {
                         // Signout
                         FirebaseAuth.getInstance().signOut()
                         finish()
                     }
                 }
                 // Don't highlight the 'Profile' and 'Like us on Facebook' item row
-                if (position != 6 && position != 4)
-                {
+                if (position != 6 && position != 4) {
                     updateAdapter(position)
                 }
                 Handler().postDelayed({ drawerLayout.closeDrawer(GravityCompat.START) }, 200)
@@ -133,7 +126,13 @@ class CreateTrip : AppCompatActivity()
         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, myTrips).commit()
 
         // Close the soft keyboard when you open or close the Drawer
-        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, activity_main_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            activity_main_toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
         {
             override fun onDrawerClosed(drawerView: View)
             {
@@ -195,10 +194,46 @@ class CreateTrip : AppCompatActivity()
         }
     }
 
+    override fun onResume()
+    {
+        handler.postDelayed(Runnable
+        {
+            handler.postDelayed(runnable!!, delay.toLong())
+            getUsers()
+        }.also
+        {
+            runnable = it
+        }, delay.toLong()
+        )
+        super.onResume()
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        handler.removeCallbacks(runnable!!)
+    }
+
+    fun getUsers ()
+    {
+        GlobalVariables.usersList = ArrayList()
+        firestoreDB!!.collection("Users").get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+
+                for (doc in task.result) {
+                    val user = doc.toObject<User>(User::class.java)
+                    user.id = doc.id
+                    GlobalVariables.usersList.add(user)
+                }
+            }
+        }
+    }
+
     fun showBeginingDate()
     {
         // DatePicker
 
+        val c = Calendar.getInstance().timeInMillis
         var cal = Calendar.getInstance()
 
         val dateSetListener = DatePickerDialog.OnDateSetListener{ view, year, monthOfYear, dayOfMonth ->
@@ -215,11 +250,13 @@ class CreateTrip : AppCompatActivity()
 
             Log.d("Clicked", "Interview Date Clicked")
 
-            val dialog = DatePickerDialog(this, dateSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH))
-            //dialog.datePicker.minDate = CalendarHelper.getCurrentDateInMills()
+            val dialog = DatePickerDialog(this, dateSetListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            dialog.datePicker.minDate = c
+            if(etdEnd.text.isNotEmpty())
+            {
+                val d = getMilliFromDate(etdEnd.text.toString())
+                dialog.datePicker.maxDate = d
+            }
             dialog.show()
         }
     }
@@ -228,9 +265,10 @@ class CreateTrip : AppCompatActivity()
     {
         // DatePicker
 
+        val c = Calendar.getInstance().timeInMillis
         var cal = Calendar.getInstance()
 
-        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+        val dateSetListener = DatePickerDialog.OnDateSetListener{ view, year, monthOfYear, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, monthOfYear)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -240,17 +278,34 @@ class CreateTrip : AppCompatActivity()
             etdEnd.setText(sdf.format(cal.time))
         }
 
-        etdEnd.setOnClickListener {
+        etdEnd.setOnClickListener{
 
             Log.d("Clicked", "Interview Date Clicked")
 
-            val dialog = DatePickerDialog(this, dateSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH))
-            //dialog.datePicker.minDate = CalendarHelper.getCurrentDateInMills()
+            val dialog = DatePickerDialog(this, dateSetListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            dialog.datePicker.minDate = c
+            if(etdBegining.text.isNotEmpty())
+            {
+                val d = getMilliFromDate(etdBegining.text.toString())
+                dialog.datePicker.minDate = d
+            }
             dialog.show()
         }
+    }
+
+    fun getMilliFromDate(dateFormat: String?): Long
+    {
+        var date = Date()
+        val formatter = SimpleDateFormat("dd/MM/yyyy")
+        try
+        {
+            date = formatter.parse(dateFormat)
+        }
+        catch (e: ParseException)
+        {
+            e.printStackTrace()
+        }
+        return date.time
     }
 
     fun verifyDates(f: String, s: String) : Boolean
@@ -304,26 +359,6 @@ class CreateTrip : AppCompatActivity()
                 GlobalVariables.sharedWithList.add(shared)
             }
         }
-        /*firestoreDB!!.collection("Users").whereEqualTo("email", email).get().addOnCompleteListener { task ->
-            if (task.isSuccessful)
-            {
-                for (doc in task.result)
-                {
-                    val user = doc.toObject<User>(User::class.java)
-                    user.id = doc.id
-                    person = user.firstName.toString() + " " + user.lastName.toString()
-                }
-                if(!TextUtils.isEmpty(person))
-                {
-                    val shared = SharedWith(email, person)
-                    GlobalVariables.sharedWithList.add(shared)
-                }
-            }
-            else
-            {
-                Log.d("TAG", "Error getting documents: ", task.exception)
-            }
-        }*/
     }
 
     fun Load()
@@ -343,7 +378,9 @@ class CreateTrip : AppCompatActivity()
         val tripBegining = etdBegining.text.toString()
         val tripEnd = etdEnd.text.toString()
 
-        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName))
+        if(!TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(tripName) && !TextUtils.isEmpty(
+                tripName
+            ))
         {
             val email = FirebaseAuth.getInstance().currentUser.email.toString().toLowerCase().trim()
             Add(email)

@@ -1,13 +1,11 @@
 package com.pjas.tripplan.App.CreateTrip
 
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -21,8 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pjas.tripplan.App.MyTrips.MyTrips
+import com.pjas.tripplan.Classes.Database.Adapter.TripExpenseRecyclerViewAdapter
 import com.pjas.tripplan.Classes.Database.Adapter.TripPlaceRecyclerViewAdapter
-import com.pjas.tripplan.Classes.Database.Model.Trip
+import com.pjas.tripplan.Classes.Database.Model.Expense
+import com.pjas.tripplan.Classes.Database.Model.SharedWith
 import com.pjas.tripplan.Classes.Database.Model.TripPlace
 import com.pjas.tripplan.Classes.NavigationDrawer.ClickListener
 import com.pjas.tripplan.Classes.NavigationDrawer.NavigationItemModel
@@ -30,25 +30,19 @@ import com.pjas.tripplan.Classes.NavigationDrawer.NavigationRVAdapter
 import com.pjas.tripplan.Classes.NavigationDrawer.RecyclerTouchListener
 import com.pjas.tripplan.Classes.Variable.GlobalVariables
 import com.pjas.tripplan.R
-import kotlinx.android.synthetic.main.createtrip_home_layout.activity_main_toolbar
-import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_header_img
-import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_layout
-import kotlinx.android.synthetic.main.createtrip_home_layout.navigation_rv
-import kotlinx.android.synthetic.main.add_edit_places_trip_layout.*
-import java.text.ParseException
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.add_expenses_trip_layout.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class AddPlaces : AppCompatActivity()
+class AddExpenses : AppCompatActivity()
 {
-
-    private lateinit var bNext: Button
+    private lateinit var etmDescription: EditText
+    private lateinit var etCost: EditText
+    private lateinit var sType: Spinner
+    private lateinit var rbYes: RadioButton
+    private lateinit var rbNo: RadioButton
     private lateinit var bAdd: Button
-    private lateinit var etName: EditText
-    private lateinit var etdBegining: EditText
-    private lateinit var etdEnd: EditText
+    private lateinit var bCreate: Button
 
     //var docId = ""
     var tripName = ""
@@ -58,7 +52,7 @@ class AddPlaces : AppCompatActivity()
     var tripEnd = ""
     var id = 0
 
-    val placesList = ArrayList<TripPlace>()
+    val placesList = GlobalVariables.placeList
     var sharedWith = GlobalVariables.sharedWithList
 
     private var firestoreDB: FirebaseFirestore? = null
@@ -68,7 +62,7 @@ class AddPlaces : AppCompatActivity()
 
     //lateinit var placesClient: PlacesClient
 
-    private var mAdapter: TripPlaceRecyclerViewAdapter? = null
+    private var mAdapter: TripExpenseRecyclerViewAdapter? = null
 
 
     private var items = arrayListOf(
@@ -80,7 +74,7 @@ class AddPlaces : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_edit_places_trip_layout)
+        setContentView(R.layout.add_expenses_trip_layout)
 
         tripName = GlobalVariables.newTripName
         tripType = GlobalVariables.newTripType
@@ -99,40 +93,34 @@ class AddPlaces : AppCompatActivity()
         navigation_rv.setHasFixedSize(true)
 
         // Add Item Touch Listener
-        navigation_rv.addOnItemTouchListener(RecyclerTouchListener(this, object : ClickListener
-        {
-            override fun onClick(view: View, position: Int)
-            {
-                when (position)
-                {
-                    0 ->
-                    {
+        navigation_rv.addOnItemTouchListener(RecyclerTouchListener(this, object : ClickListener {
+            override fun onClick(view: View, position: Int) {
+                when (position) {
+                    0 -> {
                         // # My trips Fragment
                         goMyTrips()
                     }
-                    1 ->
-                    {
+                    1 -> {
                         // Create trip Fragment
                         //val createTrip = CreateTrip_()
                         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, createTrip).commit()
                         goCreateTrip()
                     }
-                    2 ->
-                    {
+                    2 -> {
                         // Signout
                         FirebaseAuth.getInstance().signOut()
                         finish()
                     }
                 }
                 // Don't highlight the 'Profile' and 'Like us on Facebook' item row
-                if (position != 6 && position != 4)
-                {
+                if (position != 6 && position != 4) {
                     updateAdapter(position)
                 }
                 Handler().postDelayed(
                     {
                         drawerLayout.closeDrawer(GravityCompat.START)
-                    }, 200)
+                    }, 200
+                )
             }
         }))
 
@@ -144,7 +132,13 @@ class AddPlaces : AppCompatActivity()
         //supportFragmentManager.beginTransaction().replace(R.id.activity_main_content_id, myTrips).commit()
 
         // Close the soft keyboard when you open or close the Drawer
-        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawerLayout, activity_main_toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            activity_main_toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
         {
             override fun onDrawerClosed(drawerView: View)
             {
@@ -189,133 +183,52 @@ class AddPlaces : AppCompatActivity()
         firestoreDB = FirebaseFirestore.getInstance()
 
         init()
-        showBeginingDate()
-        showEndDate()
 
         bAdd!!.setOnClickListener{
             Add()
             Load()
         }
 
-        bNext!!.setOnClickListener{
+        bCreate!!.setOnClickListener{
             Create()
         }
-
-        Load()
-    }
-
-    fun showBeginingDate()
-    {
-        // DatePicker
-
-        var cal = Calendar.getInstance()
-        val b = getMilliFromDate(GlobalVariables.newTripBegining)
-        val e = getMilliFromDate(GlobalVariables.newTripEnd)
-
-        val dateSetListener = DatePickerDialog.OnDateSetListener{ view, year, monthOfYear, dayOfMonth ->
-            cal.set(Calendar.YEAR, year)
-            cal.set(Calendar.MONTH, monthOfYear)
-            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-            val myFormat = "dd/MM/yyyy" // mention the format you need
-            val sdf = SimpleDateFormat(myFormat, Locale.US)
-            etdBegining.setText(sdf.format(cal.time))
-        }
-
-        etdBegining.setOnClickListener{
-
-            Log.d("Clicked", "Interview Date Clicked")
-
-            val dialog = DatePickerDialog(this, dateSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH))
-            dialog.datePicker.minDate = b
-            dialog.datePicker.maxDate = e
-            if(etdEnd.text.isNotEmpty())
-            {
-                val d = getMilliFromDate(etdEnd.text.toString())
-                dialog.datePicker.maxDate = d
-            }
-            dialog.show()
-        }
-    }
-
-    fun showEndDate()
-    {
-        // DatePicker
-
-        var cal = Calendar.getInstance()
-        val b = getMilliFromDate(GlobalVariables.newTripBegining)
-        val e = getMilliFromDate(GlobalVariables.newTripEnd)
-
-        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            cal.set(Calendar.YEAR, year)
-            cal.set(Calendar.MONTH, monthOfYear)
-            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-            val myFormat = "dd/MM/yyyy" // mention the format you need
-            val sdf = SimpleDateFormat(myFormat, Locale.US)
-            etdEnd.setText(sdf.format(cal.time))
-        }
-
-        etdEnd.setOnClickListener {
-
-            Log.d("Clicked", "Interview Date Clicked")
-
-            val dialog = DatePickerDialog(this, dateSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH))
-            dialog.datePicker.minDate = b
-            dialog.datePicker.maxDate = e
-            if(etdBegining.text.isNotEmpty())
-            {
-                val d = getMilliFromDate(etdBegining.text.toString())
-                dialog.datePicker.minDate = d
-            }
-            dialog.show()
-        }
-    }
-
-    fun getMilliFromDate(dateFormat: String?): Long
-    {
-        var date = Date()
-        val formatter = SimpleDateFormat("dd/MM/yyyy")
-        try
-        {
-            date = formatter.parse(dateFormat)
-        }
-        catch (e: ParseException)
-        {
-            e.printStackTrace()
-        }
-        return date.time
     }
 
     fun init()
     {
-        val buttonName: String = getString(R.string.bAddPlace)
-        bNext = findViewById<View>(R.id.b_NextMP) as Button
-        etName = findViewById<View>(R.id.et_TripPlaceMP) as EditText
-        etdBegining = findViewById<View>(R.id.et_EmailCT) as EditText
-        etdEnd = findViewById<View>(R.id.etd_TripEndMP) as EditText
-        bAdd = findViewById<View>(R.id.b_AddPersonCT) as Button
-        bAdd.setText(buttonName)
+        etmDescription = findViewById<View>(R.id.etm_DescriptionAE) as EditText
+        etCost = findViewById<View>(R.id.et_CostAE) as EditText
+        sType = findViewById<View>(R.id.s_ExpenseTypeAE) as Spinner
+        rbYes = findViewById<View>(R.id.rb_SharedYesAE) as RadioButton
+        rbNo = findViewById<View>(R.id.rb_SharedNoAE) as RadioButton
+        bAdd = findViewById<View>(R.id.b_AddExpenseAE) as Button
+        bCreate = findViewById<View>(R.id.b_CreateTripAE) as Button
 
-        if(!GlobalVariables.actualPlace.place.isNullOrBlank())
-        {
-            GlobalVariables.actualPlace = TripPlace()
-            GlobalVariables.placePosition = 0
-            etName.setText("")
-            etdBegining.setText("")
-            etdEnd.setText("")
-        }
+        rbNo.isSelected
+        etmDescription.setMovementMethod(ScrollingMovementMethod())
     }
 
     fun Add()
     {
-        val name = etName.text.toString()
+        val description = etmDescription.text.toString()
+        val cost = etCost.text.toString()
+        val type = sType.selectedItem.toString()
+        var shared = false
+
+        if(!TextUtils.isEmpty(description) && !TextUtils.isEmpty(cost))
+        {
+            if (rbYes.isChecked)
+                shared=true
+
+            val sharedWithList: ArrayList<SharedWith> = ArrayList()
+
+            val expense = Expense (description, cost.toDouble(), type, shared, false, sharedWithList )
+
+            GlobalVariables.expensesList.add(expense)
+
+            etmDescription.setText("")
+        }
+        /*val name = etName.text.toString()
         val begining = etdBegining.text.toString()
         val end = etdEnd.text.toString()
 
@@ -326,16 +239,16 @@ class AddPlaces : AppCompatActivity()
             etName.setText("")
             etdBegining.setText("")
             etdEnd.setText("")
-        }
+        }*/
     }
 
     fun Load()
     {
-        mAdapter = TripPlaceRecyclerViewAdapter(GlobalVariables.placeList, applicationContext)
+        mAdapter = TripExpenseRecyclerViewAdapter(GlobalVariables.expensesList, applicationContext)
         val mLayoutManager = LinearLayoutManager(applicationContext)
-        rv_PlacesMP.layoutManager = mLayoutManager
-        rv_PlacesMP.itemAnimator = DefaultItemAnimator()
-        rv_PlacesMP.adapter = mAdapter
+        rv_ExpensesAE.layoutManager = mLayoutManager
+        rv_ExpensesAE.itemAnimator = DefaultItemAnimator()
+        rv_ExpensesAE.adapter = mAdapter
     }
 
     fun Create(){
@@ -344,16 +257,10 @@ class AddPlaces : AppCompatActivity()
         val trip = Trip(tripName, GlobalVariables.placeList, sharedWith, tripBegining, tripEnd, tripType, created)
 
         firestoreDB!!.collection("Trips").add(trip).addOnSuccessListener{ documentReference ->
-                Toast.makeText(applicationContext, "Trip created", Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener {
-                Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT).show()
-            }*/
-
-        lateinit var intent: Intent
-
-        intent = Intent(this, AddExpenses::class.java)
-
-        startActivity(intent)
+            Toast.makeText(applicationContext, "Trip created", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT).show()
+        }*/
     }
 
     fun goMyTrips()

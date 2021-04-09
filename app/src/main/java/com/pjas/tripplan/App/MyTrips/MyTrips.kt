@@ -41,13 +41,23 @@ import com.pjas.tripplan.Login.Login
 import com.pjas.tripplan.R
 import kotlinx.android.synthetic.main.mytrips_home_layout.*
 import kotlinx.android.synthetic.main.trips_layout.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 
-class MyTrips : AppCompatActivity() {
+class MyTrips : AppCompatActivity()
+{
+
+    var handler: Handler = Handler()
+    var runnable: Runnable? = null
+    var delay = 5000
 
     lateinit var drawerLayout: DrawerLayout
     private lateinit var adapter: NavigationRVAdapter
@@ -55,9 +65,6 @@ class MyTrips : AppCompatActivity() {
     private var mAdapter: TripRecyclerViewAdapter? = null
 
     private var firestoreDB: FirebaseFirestore? = null
-    private var firestoreListener: ListenerRegistration? = null
-
-    val usersList = mutableListOf<User>()
 
     private var items = arrayListOf(
         NavigationItemModel(R.drawable.ic_baseline_airplanemode_active_24, "My Trips"),
@@ -171,8 +178,14 @@ class MyTrips : AppCompatActivity() {
 
         firestoreDB = FirebaseFirestore.getInstance()
 
-        var userEmail = FirebaseAuth.getInstance().currentUser.email.toString().toLowerCase().trim()
-        getActualUserInformation(userEmail)
+        suspend fun getOwner() = firestoreDB!!
+            .collection("Chat")
+            .document("cF7DrENgQ4noWjr3SxKX")
+            .get()
+            .result
+
+        //var userEmail = FirebaseAuth.getInstance().currentUser.email.toString().toLowerCase().trim()
+        //getActualUserInformation()
 
         //loadMyTripsList()
         loadSharedTripsList()
@@ -223,8 +236,29 @@ class MyTrips : AppCompatActivity() {
         }
     }
 
-    fun getActualUserInformation (email: String)
+    override fun onResume()
     {
+        handler.postDelayed(Runnable
+        {
+            handler.postDelayed(runnable!!, delay.toLong())
+            getUsers()
+            loadSharedTripsList()
+        }.also
+        {
+            runnable = it
+        }, delay.toLong())
+        super.onResume()
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        handler.removeCallbacks(runnable!!)
+    }
+
+    fun getUsers ()
+    {
+        GlobalVariables.usersList = ArrayList()
         firestoreDB!!.collection("Users").get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
 
@@ -299,14 +333,12 @@ class MyTrips : AppCompatActivity() {
                                 myTripsList.add(trip)
                         }
                     }
-
-
-                    mAdapter = TripRecyclerViewAdapter(myTripsList, applicationContext, firestoreDB!!)
-                    val mLayoutManager = LinearLayoutManager(applicationContext)
-                    rv_FutureTrips.layoutManager = mLayoutManager
-                    rv_FutureTrips.itemAnimator = DefaultItemAnimator()
-                    rv_FutureTrips.adapter = mAdapter
                 }
+                mAdapter = TripRecyclerViewAdapter(myTripsList, applicationContext, firestoreDB!!)
+                val mLayoutManager = LinearLayoutManager(applicationContext)
+                rv_FutureTrips.layoutManager = mLayoutManager
+                rv_FutureTrips.itemAnimator = DefaultItemAnimator()
+                rv_FutureTrips.adapter = mAdapter
             }
             else
             {
@@ -314,33 +346,6 @@ class MyTrips : AppCompatActivity() {
             }
         }
     }
-
-    /*private fun loadMyTripsList() {
-        val id = FirebaseAuth.getInstance().currentUser.uid
-        firestoreDB!!
-            .collection("Trips")
-            .whereEqualTo("created", id)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val tripsList = mutableListOf<Trip>()
-
-                    for (doc in task.result) {
-                        val trip = doc.toObject<Trip>(Trip::class.java)
-                        trip.id = doc.id
-                        tripsList.add(trip)
-                    }
-
-                    mAdapter = TripRecyclerViewAdapter(tripsList, applicationContext, firestoreDB!!)
-                    val mLayoutManager = LinearLayoutManager(applicationContext)
-                    rv_FutureTrips.layoutManager = mLayoutManager
-                    rv_FutureTrips.itemAnimator = DefaultItemAnimator()
-                    rv_FutureTrips.adapter = mAdapter
-                } else {
-                    Log.d("TAG", "Error getting documents: ", task.exception)
-                }
-            }
-    }*/
 
     // // View Holder Class
 
